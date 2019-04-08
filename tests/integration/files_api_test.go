@@ -13,7 +13,7 @@ func init() {
 	mountBackEndURL()
 }
 
-func TestFileUpload(t *testing.T) {
+func TestFileUploadThenOK(t *testing.T) {
 
 	fileToUpload := "/home/tiago/Desktop/todo.txt"
 
@@ -21,6 +21,18 @@ func TestFileUpload(t *testing.T) {
 
 	expected := 200
 	if status != 200 {
+		t.Errorf("Expected is %d but was: %d", expected, status)
+	}
+}
+
+func TestFileUploadThenError(t *testing.T) {
+
+	fileToUpload := "/home/tiago/Desktop/todo.txt"
+
+	status := request.PostMultiPart(fmt.Sprintf("%s/%s", baseURL, filesPathURL), "", fileToUpload)
+
+	expected := 403
+	if status != 403 {
 		t.Errorf("Expected is %d but was: %d", expected, status)
 	}
 }

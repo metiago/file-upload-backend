@@ -129,7 +129,6 @@ func PostHTTP(url string, token string, body []byte) int {
 }
 
 func PostHTTPBody(url string, token string, body []byte) (int, []byte) {
-	// FIXME
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
 	checkError(err)
 	req.Header.Set("Content-Type", "application/json")

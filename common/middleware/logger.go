@@ -13,6 +13,22 @@ func Logger(next http.Handler, name string) http.Handler {
 
 		start := time.Now()
 
+		// log.Println("middleware", r.URL)
+		next.ServeHTTP(w, r)
+		log.Printf(
+			"%s\t%s\t%s\t%s",
+			r.Method,
+			r.RequestURI,
+			name,
+			time.Since(start),
+		)
+	})
+}
+
+func Token(next http.Handler) http.Handler {
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
 		token := r.Header.Get("Authorization")
 
 		if token != "" {
@@ -21,13 +37,5 @@ func Logger(next http.Handler, name string) http.Handler {
 		} else {
 			next.ServeHTTP(w, r)
 		}
-
-		log.Printf(
-			"%s\t%s\t%s\t%s",
-			r.Method,
-			r.RequestURI,
-			name,
-			time.Since(start),
-		)
 	})
 }
