@@ -41,7 +41,7 @@ func Handle200(w http.ResponseWriter, message string) {
 
 func Handle401(w http.ResponseWriter) {
 	var response Response
-	w.WriteHeader(http.StatusForbidden)
+	w.WriteHeader(http.StatusUnauthorized)
 	response.StatusCode = http.StatusUnauthorized
 	response.Message = "Unauthorized"
 	if err := json.NewEncoder(w).Encode(response); err != nil {
