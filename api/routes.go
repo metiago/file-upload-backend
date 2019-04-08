@@ -30,9 +30,11 @@ func NewRouter() *mux.Router {
 	router := mux.NewRouter()
 	router.PathPrefix("/api").Handler(negroni.New(negroni.HandlerFunc(authHandler), negroni.Wrap(apiRouter)))
 
-	dash := router.PathPrefix("/auth").Subrouter()
+	auth := router.PathPrefix("/auth").Subrouter()
+	auth.HandleFunc("/signin", loginHandler).Methods("POST")
+
+	dash := router.PathPrefix("/").Subrouter()
 	dash.HandleFunc("/", index).Methods("GET")
-	dash.HandleFunc("/signin", loginHandler).Methods("POST")
 
 	return router
 }
