@@ -217,8 +217,6 @@ func DeleteUser(ID int) error {
 // RepoAuthUser is to check if user's credentials are ok
 func AuthUser(username string, password string) (bool, error) {
 
-	log.Println("Authorizing user with username ", username)
-
 	var u User
 
 	stmt, err := env.GetConnection().Prepare(dml.AuthUser)

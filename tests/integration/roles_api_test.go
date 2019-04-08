@@ -25,7 +25,7 @@ func TestAddRole(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	status := request.PostHTTP(fmt.Sprintf("%s/%s", baseURL, rolesPathURL), "", data)
+	status := request.PostHTTP(fmt.Sprintf("%s/%s", baseURL, rolesPathURL), token, data)
 
 	expected := 201
 	if status != 201 {
@@ -40,7 +40,7 @@ func TestUpdateRole(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	status := request.PutHTTP(fmt.Sprintf("%s/%s/%s", baseURL, rolesPathURL, strconv.Itoa(any.ID)), "", data)
+	status := request.PutHTTP(fmt.Sprintf("%s/%s/%s", baseURL, rolesPathURL, strconv.Itoa(any.ID)), token, data)
 	expected := 200
 	if status != 200 {
 		t.Errorf("Expected is %d but was: %d", expected, status)
@@ -52,7 +52,7 @@ func TestFindOneRole(t *testing.T) {
 	role := getAnyRole()
 	id := strconv.Itoa(role.ID)
 
-	body, status := request.GetHTTP(fmt.Sprintf("%s/%s/%s", baseURL, rolesPathURL, id), "")
+	body, status := request.GetHTTP(fmt.Sprintf("%s/%s/%s", baseURL, rolesPathURL, id), token)
 
 	var u *repository.Role
 	if err := json.Unmarshal(body, &u); err != nil {
@@ -71,7 +71,7 @@ func TestFindOneRole(t *testing.T) {
 
 func TestFindAllRoles(t *testing.T) {
 
-	body, status := request.GetHTTP(fmt.Sprintf("%s/%s", baseURL, rolesPathURL), "")
+	body, status := request.GetHTTP(fmt.Sprintf("%s/%s", baseURL, rolesPathURL), token)
 
 	var Roles []*repository.Role
 	if err := json.Unmarshal(body, &Roles); err != nil {
@@ -93,7 +93,7 @@ func TestDeleteRole(t *testing.T) {
 	any := getAnyRole()
 	anyID := strconv.Itoa(any.ID)
 
-	status := request.DeleteHTTP(fmt.Sprintf("%s/%s/%s", baseURL, rolesPathURL, anyID), "")
+	status := request.DeleteHTTP(fmt.Sprintf("%s/%s/%s", baseURL, rolesPathURL, anyID), token)
 
 	expected := 204
 	if status != 204 {
@@ -102,7 +102,7 @@ func TestDeleteRole(t *testing.T) {
 }
 
 func getAnyRole() *repository.Role {
-	body, _ := request.GetHTTP(fmt.Sprintf("%s/%s", baseURL, rolesPathURL), "")
+	body, _ := request.GetHTTP(fmt.Sprintf("%s/%s", baseURL, rolesPathURL), token)
 	var roles []*repository.Role
 	var role *repository.Role
 	if err := json.Unmarshal(body, &roles); err != nil {

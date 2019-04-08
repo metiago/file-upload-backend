@@ -11,13 +11,13 @@ import (
 	"path/filepath"
 	"strconv"
 
-	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
+	"github.com/mitchellh/mapstructure"
 
+	"github.com/metiago/zbx1/common/helper"
 	"github.com/metiago/zbx1/common/request"
 
 	"github.com/metiago/zbx1/repository"
-	"github.com/mitchellh/mapstructure"
 )
 
 const (
@@ -49,30 +49,28 @@ func fileUpload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// FIXME REFACTOR IT, CREATE A HELPER FOR IT
-	tokenString := r.Header.Get(authHeader)
-	claims := jwt.MapClaims{}
-	_, err = jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
-		return verifyKey, nil
-	})
-	if err != nil {
+	if token := r.Context().Value("token"); token != nil {
+
+		claims, err := helper.ExtractTokenClaims(token.(string), verifyKey)
+
+		var u repository.User
+		mapstructure.Decode(claims["uinf"], &u)
+
+		var f repository.File
+		f.Name = handler.Filename
+		f.Ext = filepath.Ext(handler.Filename)
+		f.Data = buf.Bytes()
+		err = repository.FileUpload(u, f)
+		if err != nil {
+			log.Println(err)
+			request.Handle500(w, err)
+		}
+
+	} else {
 		request.Handle500(w, err)
 	}
 
-	// FIXME REFACTOR IT, CREATE A SERVICE LAYER
-	var u repository.User
-	mapstructure.Decode(claims["uinf"], &u)
-	var f repository.File
-	f.Name = handler.Filename
-	f.Ext = filepath.Ext(handler.Filename)
-	f.Data = buf.Bytes()
-	err = repository.FileUpload(u, f)
-	if err != nil {
-		log.Println(err)
-		request.Handle500(w, err)
-	}
-
-	// FIXME CHANGE RESPONSE
+	// FIXME CHANGE RESPONSE FORMAT
 	fmt.Fprintf(w, "%v", handler.Header)
 }
 

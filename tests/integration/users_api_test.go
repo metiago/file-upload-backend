@@ -32,7 +32,7 @@ func TestAddUser(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	status := request.PostHTTP(fmt.Sprintf("%s/%s", baseURL, usersPathURL), "", data)
+	status := request.PostHTTP(fmt.Sprintf("%s/%s", baseURL, usersPathURL), token, data)
 
 	if status != 201 {
 		t.Errorf("Status was: %d", status)
@@ -55,7 +55,7 @@ func TestUpdateUser(t *testing.T) {
 		t.Error(err)
 	}
 	id := strconv.Itoa(anyUser.ID)
-	status := request.PutHTTP(fmt.Sprintf("%s/%s/%s", baseURL, usersPathURL, id), "", data)
+	status := request.PutHTTP(fmt.Sprintf("%s/%s/%s", baseURL, usersPathURL, id), token, data)
 	if status != 200 {
 		t.Errorf("Status was: %d", status)
 	}
@@ -66,7 +66,7 @@ func TestFindOneUser(t *testing.T) {
 	user := getAnyUser()
 	id := strconv.Itoa(user.ID)
 
-	body, status := request.GetHTTP(fmt.Sprintf("%s/%s/%s", baseURL, usersPathURL, id), "")
+	body, status := request.GetHTTP(fmt.Sprintf("%s/%s/%s", baseURL, usersPathURL, id), token)
 
 	var u *repository.User
 	if err := json.Unmarshal(body, &u); err != nil {
@@ -85,7 +85,7 @@ func TestFindOneUser(t *testing.T) {
 
 func TestFindAllUsers(t *testing.T) {
 
-	body, status := request.GetHTTP(fmt.Sprintf("%s/%s", baseURL, usersPathURL), "")
+	body, status := request.GetHTTP(fmt.Sprintf("%s/%s", baseURL, usersPathURL), token)
 
 	var users []*repository.User
 	if err := json.Unmarshal(body, &users); err != nil {
@@ -106,7 +106,7 @@ func TestDeleteUser(t *testing.T) {
 	user := getAnyUser()
 	id := strconv.Itoa(user.ID)
 
-	status := request.DeleteHTTP(fmt.Sprintf("%s/%s/%s", baseURL, usersPathURL, id), "")
+	status := request.DeleteHTTP(fmt.Sprintf("%s/%s/%s", baseURL, usersPathURL, id), token)
 
 	if status != 204 {
 		t.Errorf("Status was: %d", status)
@@ -114,7 +114,7 @@ func TestDeleteUser(t *testing.T) {
 }
 
 func getAnyUser() *repository.User {
-	body, _ := request.GetHTTP(fmt.Sprintf("%s/%s", baseURL, usersPathURL), "")
+	body, _ := request.GetHTTP(fmt.Sprintf("%s/%s", baseURL, usersPathURL), token)
 	var users []*repository.User
 	var user *repository.User
 	if err := json.Unmarshal(body, &users); err != nil {

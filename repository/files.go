@@ -11,8 +11,6 @@ import (
 
 func FileUpload(u User, f File) error {
 
-	log.Println(u)
-
 	db := env.GetConnection()
 
 	tx, err := db.Begin()

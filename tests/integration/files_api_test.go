@@ -15,8 +15,6 @@ func init() {
 
 func TestFileUpload(t *testing.T) {
 
-	token := authorize()
-
 	fileToUpload := "/home/tiago/Desktop/todo.txt"
 
 	status := request.PostMultiPart(fmt.Sprintf("%s/%s", baseURL, filesPathURL), token, fileToUpload)

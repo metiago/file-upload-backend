@@ -14,10 +14,13 @@ var baseURL string
 
 var authPathURL = "auth/signin"
 
+var token string
+
 func mountBackEndURL() {
 	host := os.Getenv("HOST")
 	port := os.Getenv("PORT")
 	baseURL = "http://" + host + ":" + port
+	token = authorize()
 }
 
 func authorize() string {
