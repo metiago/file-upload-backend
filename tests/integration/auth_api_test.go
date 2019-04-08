@@ -18,6 +18,9 @@ func init() {
 func TestAuthUser(t *testing.T) {
 
 	u := repository.User{
+		Name:     "",
+		Email:    "",
+		Role:     &repository.Role{Name: ""},
 		Username: "metiago",
 		Password: "zero",
 	}

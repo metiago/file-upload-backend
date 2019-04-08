@@ -8,6 +8,7 @@ require (
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/gorilla/handlers v1.4.0
 	github.com/gorilla/mux v1.7.1
+	github.com/lib/pq v1.0.0
 	github.com/mitchellh/mapstructure v1.1.2
 	github.com/onsi/ginkgo v1.8.0 // indirect
 	github.com/onsi/gomega v1.5.0 // indirect

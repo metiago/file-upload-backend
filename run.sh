@@ -5,7 +5,7 @@ export USER=zbx1
 export DATABASE=zbx1
 
 # APP
-export HOST=localhost
+export HOST=0.0.0.0
 export PORT=5000
 
 # DB
@@ -13,12 +13,14 @@ export DB_HOST=postgres
 export DB_PORT=5432 
 export DB_USERNAME=postgres
 export DB_PASSWORD=12345678
-export DB_DATABASE=zbx01
+export DB_DATABASE=zbx1
 
 export PRI_RSA=/usr/local/rsa/app.rsa
 export PUB_RSA=/usr/local/rsa/app.rsa.pub
 
 docker-compose down
+
+sudo chmod 777 -R volumes/
 
 sleep 2
 

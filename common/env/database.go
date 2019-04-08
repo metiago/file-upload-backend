@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/go-redis/redis"
+	_ "github.com/lib/pq"
 )
 
 var (
@@ -22,15 +23,13 @@ func init() {
 	if host == "" || port == "" || username == "" || password == "" || database == "" {
 		log.Fatal("You must export database environment variables.")
 	}
-	settings = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", username, password, host, port, database)
+	settings = fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, username, password, database)
 	log.Println("Connecting to database:", settings)
 }
 
 // GetConnection is responsible to get mysql connection
 func GetConnection() *sql.DB {
 	db, err := sql.Open("postgres", settings)
-	db.SetMaxOpenConns(100)
-	db.SetMaxIdleConns(80)
 	if err != nil {
 		log.Fatal(err)
 	}
