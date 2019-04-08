@@ -67,7 +67,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if err == sql.ErrNoRows {
 			log.Println(err)
-			request.Handle404(w)
+			request.Handle401(w)
 			return
 		}
 		log.Println(err)
@@ -83,7 +83,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !ok {
-		request.Handle403(w)
+		request.Handle401(w)
 		return
 	}
 

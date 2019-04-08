@@ -184,7 +184,7 @@ func FindUserByUsername(username string) (*User, error) {
 		return nil, err
 	}
 	defer stmt.Close()
-	err = stmt.QueryRow(username).Scan(&u.ID, &u.Name, &u.Email, &u.Password, &u.Created)
+	err = stmt.QueryRow(username).Scan(&u.ID, &u.Name, &u.Email, &u.Username, &u.Created)
 	switch {
 	case err == sql.ErrNoRows:
 		log.Printf("User with username %s not found", username)

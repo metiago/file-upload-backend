@@ -39,11 +39,21 @@ func Handle200(w http.ResponseWriter, message string) {
 	}
 }
 
+func Handle401(w http.ResponseWriter) {
+	var response Response
+	w.WriteHeader(http.StatusForbidden)
+	response.StatusCode = http.StatusUnauthorized
+	response.Message = "Unauthorized"
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		log.Println(err)
+	}
+}
+
 func Handle403(w http.ResponseWriter) {
 	var response Response
 	w.WriteHeader(http.StatusForbidden)
 	response.StatusCode = http.StatusForbidden
-	response.Message = "Unauthorized"
+	response.Message = "Forbidden"
 	if err := json.NewEncoder(w).Encode(response); err != nil {
 		log.Println(err)
 	}
