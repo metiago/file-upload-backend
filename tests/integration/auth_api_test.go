@@ -9,18 +9,13 @@ import (
 	"github.com/metiago/zbx1/repository"
 )
 
-var authPathURL = "login/auth"
-
 func init() {
 	mountBackEndURL()
 }
 
-func TestAuthUser(t *testing.T) {
+func TestAuthUserOK(t *testing.T) {
 
 	u := repository.User{
-		Name:     "",
-		Email:    "",
-		Role:     &repository.Role{Name: ""},
 		Username: "metiago",
 		Password: "zero",
 	}
@@ -32,7 +27,28 @@ func TestAuthUser(t *testing.T) {
 
 	status := request.PostHTTP(fmt.Sprintf("%s/%s", baseURL, authPathURL), "", data)
 
+	expected := 200
 	if status != 200 {
-		t.Errorf("Status was: %d", status)
+		t.Errorf("Expected is %d but was: %d", expected, status)
+	}
+}
+
+func TestAuthUserThanFail(t *testing.T) {
+
+	u := repository.User{
+		Username: "metiago",
+		Password: "Xh1345",
+	}
+
+	data, err := json.Marshal(u)
+	if err != nil {
+		t.Error(err)
+	}
+
+	status := request.PostHTTP(fmt.Sprintf("%s/%s", baseURL, authPathURL), "", data)
+
+	expected := 403
+	if status != 403 {
+		t.Errorf("Expected is %d but was: %d", expected, status)
 	}
 }

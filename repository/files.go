@@ -5,20 +5,15 @@ import (
 	"log"
 	"time"
 
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/metiago/zbx1/common/dml"
 	"github.com/metiago/zbx1/common/env"
 )
 
 func FileUpload(u User, f File) error {
 
-	db := env.GetConnection()
+	log.Println(u)
 
-	stmt, err := db.Prepare(dml.AddFile)
-	if err != nil {
-		return err
-	}
-	defer stmt.Close()
+	db := env.GetConnection()
 
 	tx, err := db.Begin()
 
@@ -27,7 +22,8 @@ func FileUpload(u User, f File) error {
 		return err
 	}
 
-	res, err := tx.Stmt(stmt).Exec(f.Name, f.Ext, f.Data, time.Now())
+	var id int
+	err = tx.QueryRow(dml.AddFile, f.Name, f.Ext, f.Data, time.Now()).Scan(&id)
 
 	if err != nil {
 		log.Println(err)
@@ -35,20 +31,7 @@ func FileUpload(u User, f File) error {
 		return err
 	}
 
-	id, err := res.LastInsertId()
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	stmt, err = db.Prepare(dml.AddUserFile)
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-	defer stmt.Close()
-
-	_, err = tx.Stmt(stmt).Exec(u.ID, id)
+	_, err = tx.Exec(dml.AddUserFile, u.ID, id)
 	if err != nil {
 		log.Println(err)
 		tx.Rollback()

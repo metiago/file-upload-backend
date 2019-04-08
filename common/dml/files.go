@@ -1,6 +1,6 @@
 package dml
 
-const AddFile string = "INSERT INTO zbx1.files(f_name, f_ext, f_data, f_created) VALUES ($1, $2, $3, $4)"
+const AddFile string = "INSERT INTO zbx1.files(f_name, f_ext, f_data, f_created) VALUES ($1, $2, $3, $4) returning id"
 
 const FindAllFiles string = "SELECT id, f_name, f_ext, f_created, f_data zbx1.FROM files"
 

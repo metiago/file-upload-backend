@@ -2,6 +2,7 @@ package tests
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 
@@ -10,6 +11,8 @@ import (
 )
 
 var baseURL string
+
+var authPathURL = "auth/signin"
 
 func mountBackEndURL() {
 	host := os.Getenv("HOST")
@@ -26,7 +29,7 @@ func authorize() string {
 	if err != nil {
 		log.Println(err)
 	}
-	_, body := request.PostHTTPBody(baseURL+"/login/auth", "", data)
+	_, body := request.PostHTTPBody(fmt.Sprintf("%s/%s", baseURL, authPathURL), "", data)
 	m := make(map[string]string)
 	json.Unmarshal(body, &m)
 	return m["token"]

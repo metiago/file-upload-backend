@@ -27,8 +27,9 @@ func TestAddRole(t *testing.T) {
 	}
 	status := request.PostHTTP(fmt.Sprintf("%s/%s", baseURL, rolesPathURL), "", data)
 
+	expected := 201
 	if status != 201 {
-		t.Errorf("Status was: %d", status)
+		t.Errorf("Expected is %d but was: %d", expected, status)
 	}
 }
 
@@ -40,8 +41,9 @@ func TestUpdateRole(t *testing.T) {
 		t.Error(err)
 	}
 	status := request.PutHTTP(fmt.Sprintf("%s/%s/%s", baseURL, rolesPathURL, strconv.Itoa(any.ID)), "", data)
+	expected := 200
 	if status != 200 {
-		t.Errorf("Status was: %d", status)
+		t.Errorf("Expected is %d but was: %d", expected, status)
 	}
 }
 
@@ -57,8 +59,9 @@ func TestFindOneRole(t *testing.T) {
 		t.Error(err)
 	}
 
+	expected := 200
 	if status != 200 {
-		t.Errorf("Status was: %d", status)
+		t.Errorf("Expected is %d but was: %d", expected, status)
 	}
 
 	if u == nil {
@@ -75,8 +78,9 @@ func TestFindAllRoles(t *testing.T) {
 		t.Error(err)
 	}
 
+	expected := 200
 	if status != 200 {
-		t.Errorf("Status was: %d", status)
+		t.Errorf("Expected is %d but was: %d", expected, status)
 	}
 
 	if len(Roles) == 0 {
@@ -91,8 +95,9 @@ func TestDeleteRole(t *testing.T) {
 
 	status := request.DeleteHTTP(fmt.Sprintf("%s/%s/%s", baseURL, rolesPathURL, anyID), "")
 
+	expected := 204
 	if status != 204 {
-		t.Errorf("Status was: %d", status)
+		t.Errorf("Expected is %d but was: %d", expected, status)
 	}
 }
 

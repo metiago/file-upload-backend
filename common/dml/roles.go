@@ -6,7 +6,7 @@ const UpdateRole string = "UPDATE zbx1.roles SET r_name = $1, r_created = $2 WHE
 
 const DeleteRole string = "DELETE from zbx1.roles WHERE id = $1"
 
-const FindRoleByID string = "SELECT id, r_name, r_created FROM zbx1.oles WHERE id = ($1)"
+const FindRoleByID string = "SELECT id, r_name, r_created FROM zbx1.roles WHERE id = ($1)"
 
 const FindAllRoles string = "SELECT id, r_name, r_created FROM zbx1.roles"
 

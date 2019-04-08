@@ -18,12 +18,6 @@ func AddUser(u *User) (*User, error) {
 
 	db := env.GetConnection()
 
-	stmt, err := db.Prepare(dml.AddUser)
-	if err != nil {
-		return nil, err
-	}
-	defer stmt.Close()
-
 	tx, err := db.Begin()
 
 	if err != nil {
@@ -31,26 +25,14 @@ func AddUser(u *User) (*User, error) {
 		return nil, err
 	}
 
-	res, err := tx.Stmt(stmt).Exec(u.Name, u.Email, u.Username, u.Password, time.Now())
+	var id int
+	err = tx.QueryRow(dml.AddUser, u.Name, u.Email, u.Username, u.Password, time.Now()).Scan(&id)
 
 	if err != nil {
-		log.Println(err)
+		log.Printf("Error inserting user: %v", err)
 		tx.Rollback()
 		return nil, err
 	}
-
-	uid, err := res.LastInsertId()
-	if err != nil {
-		tx.Rollback()
-		return nil, err
-	}
-
-	stmt, err = db.Prepare(dml.AddUserRole)
-	if err != nil {
-		tx.Rollback()
-		return nil, err
-	}
-	defer stmt.Close()
 
 	r, err := FindRoleByID(u.Role.ID)
 	if r == nil {
@@ -58,9 +40,9 @@ func AddUser(u *User) (*User, error) {
 		return nil, fmt.Errorf("Role with ID %d not found ", u.Role.ID)
 	}
 
-	_, err = tx.Stmt(stmt).Exec(uid, r.ID)
+	_, err = tx.Exec(dml.AddUserRole, id, r.ID)
 	if err != nil {
-		log.Println(err)
+		log.Printf("Error inserting role for user: %v", err)
 		tx.Rollback()
 		return nil, err
 	}

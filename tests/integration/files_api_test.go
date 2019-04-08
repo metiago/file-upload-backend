@@ -17,11 +17,12 @@ func TestFileUpload(t *testing.T) {
 
 	token := authorize()
 
-	fileToUpload := "/home/tiago/Desktop/document.pdf"
+	fileToUpload := "/home/tiago/Desktop/todo.txt"
 
 	status := request.PostMultiPart(fmt.Sprintf("%s/%s", baseURL, filesPathURL), token, fileToUpload)
 
+	expected := 200
 	if status != 200 {
-		t.Errorf("Status was: %d", status)
+		t.Errorf("Expected is %d but was: %d", expected, status)
 	}
 }
