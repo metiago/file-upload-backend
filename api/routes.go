@@ -31,18 +31,13 @@ func NewRouter() *mux.Router {
 	router.PathPrefix("/api").Handler(negroni.New(negroni.HandlerFunc(authHandler), negroni.Wrap(apiRouter)))
 
 	dash := router.PathPrefix("/auth").Subrouter()
+	dash.HandleFunc("/", index).Methods("GET")
 	dash.HandleFunc("/signin", loginHandler).Methods("POST")
 
 	return router
 }
 
 var routes = Routes{
-	Route{
-		"Index",
-		"GET",
-		"/health",
-		index,
-	},
 	Route{
 		"UserFindAll",
 		"GET",

@@ -18,6 +18,22 @@ export DB_DATABASE=zbx1
 export PRI_RSA=/usr/local/rsa/app.rsa
 export PUB_RSA=/usr/local/rsa/app.rsa.pub
 
+
+###
+
+sudo snap run heroku config:set HOST=0.0.0.0 --app zbx1
+sudo snap run heroku config:set PORT=5000 --app zbx1
+sudo snap run heroku config:set DB_HOST=5000 --app zbx1
+sudo snap run heroku config:set DB_PORT=5000 --app zbx1
+sudo snap run heroku config:set DB_USERNAME=5000 --app zbx1
+sudo snap run heroku config:set DB_PASSWORD=5000 --app zbx1
+sudo snap run heroku config:set DB_DATABASE=5000 --app zbx1
+
+sudo snap run heroku config:set PRI_RSA=rsa/app.rsa --app zbx1
+sudo snap run heroku config:set PUB_RSA=rsa/app.rsa.pub --app zbx1
+
+##
+
 docker-compose down
 
 sudo chmod 777 -R volumes/
