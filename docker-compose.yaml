@@ -1,0 +1,46 @@
+version: '3.3'
+services:
+  zbx1:
+    container_name: 'zbx1'
+    build: './backend'
+    image: zbx1
+    ports:
+      - '5000:5000'
+    depends_on: 
+      - 'postgres'
+    environment:
+      PORT: ${PORT}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE}
+      PRI_RSA: ${PRI_RSA}
+      PUB_RSA: ${PUB_RSA}
+    links:
+      - postgres:postgres
+    volumes:
+      - $PWD/volumes/zbx1:/usr/local/
+  
+  postgres:
+    container_name: 'postgres'
+    image: postgres
+    restart: always
+    ports: 
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_DB: ${DB_DATABASE}
+    volumes:
+      - $PWD/volumes/postgres/data:/var/lib/postgresql/data
+
+  adminer:
+    container_name: 'adminer'
+    image: adminer
+    restart: always
+    depends_on: 
+      - 'postgres'
+    ports:
+      - 8080:8080
+
