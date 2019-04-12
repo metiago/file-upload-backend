@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/metiago/zbx1/common/request"
 )
 
 func Logger(next http.Handler, name string) http.Handler {
@@ -35,6 +37,7 @@ func Token(next http.Handler) http.Handler {
 			ctx := context.WithValue(r.Context(), "token", token)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		} else {
+			request.Handle403(w)
 			next.ServeHTTP(w, r)
 		}
 	})

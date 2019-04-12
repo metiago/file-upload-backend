@@ -66,8 +66,6 @@ func fileUpload(w http.ResponseWriter, r *http.Request) {
 			request.Handle500(w, err)
 		}
 
-	} else {
-		request.Handle500(w, err)
 	}
 
 	// FIXME CHANGE RESPONSE FORMAT
