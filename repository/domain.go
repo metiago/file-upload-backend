@@ -19,6 +19,7 @@ type File struct {
 	Privileges *[]Privilege `json:"permissions"`
 	Data       []byte       `json:"-"`
 	Created    time.Time    `json:"created"`
+	Username   string       `json:"username"`
 }
 
 // Role is a type to define users roles in the system

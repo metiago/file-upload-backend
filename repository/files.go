@@ -75,7 +75,7 @@ func FindaAllFilesByUsername(username string) ([]File, error) {
 	var fl = make([]File, 0)
 
 	for rows.Next() {
-		err = rows.Scan(&f.ID, &f.Name, &f.Ext, &f.Created, &f.Data)
+		err = rows.Scan(&f.ID, &f.Name, &f.Ext, &f.Created, &f.Data, &f.Username)
 		if err != nil {
 			log.Printf("Error reading row %s", err)
 			return nil, err
