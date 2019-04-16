@@ -33,8 +33,8 @@ func TestAddUser(t *testing.T) {
 		t.Error(err)
 	}
 	status := request.PostHTTP(fmt.Sprintf("%s/%s", baseURL, usersPathURL), token, data)
-
-	if status != 201 {
+	expected := 201
+	if status != expected {
 		t.Errorf("Status was: %d", status)
 	}
 }
@@ -56,7 +56,8 @@ func TestUpdateUser(t *testing.T) {
 	}
 	id := strconv.Itoa(anyUser.ID)
 	status := request.PutHTTP(fmt.Sprintf("%s/%s/%s", baseURL, usersPathURL, id), token, data)
-	if status != 200 {
+	expected := 200
+	if status != expected {
 		t.Errorf("Status was: %d", status)
 	}
 }
@@ -73,7 +74,8 @@ func TestFindOneUser(t *testing.T) {
 		t.Error(err)
 	}
 
-	if status != 200 {
+	expected := 200
+	if status != expected {
 		t.Errorf("Status was: %d", status)
 	}
 
@@ -92,7 +94,8 @@ func TestFindAllUsers(t *testing.T) {
 		t.Error(err)
 	}
 
-	if status != 200 {
+	expected := 200
+	if status != expected {
 		t.Errorf("Status was: %d", status)
 	}
 
@@ -108,7 +111,8 @@ func TestDeleteUser(t *testing.T) {
 
 	status := request.DeleteHTTP(fmt.Sprintf("%s/%s/%s", baseURL, usersPathURL, id), token)
 
-	if status != 204 {
+	expected := 204
+	if status != expected {
 		t.Errorf("Status was: %d", status)
 	}
 }

@@ -15,24 +15,24 @@ func init() {
 
 func TestFileUploadThenOK(t *testing.T) {
 
-	fileToUpload := "/home/tiago/Desktop/todo.txt"
+	fileToUpload := "int-tests.txt"
 
 	status := request.PostMultiPart(fmt.Sprintf("%s/%s", baseURL, filesPathURL), token, fileToUpload)
 
-	expected := 200
-	if status != 200 {
+	expected := 201
+	if status != expected {
 		t.Errorf("Expected is %d but was: %d", expected, status)
 	}
 }
 
 func TestFileUploadThenError(t *testing.T) {
 
-	fileToUpload := "/home/tiago/Desktop/todo.txt"
+	fileToUpload := "int-tests.txt"
 
 	status := request.PostMultiPart(fmt.Sprintf("%s/%s", baseURL, filesPathURL), "", fileToUpload)
 
 	expected := 403
-	if status != 403 {
+	if status != expected {
 		t.Errorf("Expected is %d but was: %d", expected, status)
 	}
 }

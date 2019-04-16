@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -68,8 +67,7 @@ func fileUpload(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	// FIXME CHANGE RESPONSE FORMAT
-	fmt.Fprintf(w, "%v", handler.Header)
+	w.WriteHeader(http.StatusCreated)
 }
 
 func fileDownload(w http.ResponseWriter, r *http.Request) {

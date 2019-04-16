@@ -28,7 +28,7 @@ func TestAuthUserOK(t *testing.T) {
 	status := request.PostHTTP(fmt.Sprintf("%s/%s", baseURL, authPathURL), "", data)
 
 	expected := 200
-	if status != 200 {
+	if status != expected {
 		t.Errorf("Expected is %d but was: %d", expected, status)
 	}
 }
@@ -48,7 +48,7 @@ func TestAuthUserThanFail(t *testing.T) {
 	status := request.PostHTTP(fmt.Sprintf("%s/%s", baseURL, authPathURL), "", data)
 
 	expected := 401
-	if status != 401 {
+	if status != expected {
 		t.Errorf("Expected is %d but was: %d", expected, status)
 	}
 }
