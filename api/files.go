@@ -61,6 +61,13 @@ func fileUpload(w http.ResponseWriter, r *http.Request) {
 		f.Data = buf.Bytes()
 		err = repository.FileUpload(u, f)
 		if err != nil {
+
+			if err == repository.ErrFileExists {
+				log.Println(err)
+				request.Handle400(w, err)
+				return
+			}
+
 			log.Println(err)
 			request.Handle500(w, err)
 		}

@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"errors"
 	"log"
 	"time"
 
@@ -9,7 +10,19 @@ import (
 	"github.com/metiago/zbx1/common/env"
 )
 
+var ErrFileExists = errors.New("File already exists")
+
 func FileUpload(u User, f File) error {
+
+	exists, err := fileExists(f.Name)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	if exists {
+		return ErrFileExists
+	}
 
 	db := env.GetConnection()
 
@@ -85,4 +98,19 @@ func FindaAllFilesByUsername(username string) ([]File, error) {
 	}
 
 	return fl, err
+}
+
+func fileExists(name string) (bool, error) {
+
+	rows, err := env.GetConnection().Query(dml.FileExist, name)
+	if err != nil {
+		return false, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		return true, nil
+	}
+
+	return false, nil
 }
