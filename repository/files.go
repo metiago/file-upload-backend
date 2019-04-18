@@ -114,3 +114,62 @@ func fileExists(u User, f File) (bool, error) {
 
 	return false, nil
 }
+
+func FindFileByID(ID int) (*File, error) {
+
+	var f File
+
+	stmt, err := env.GetConnection().Prepare(dml.FindFileByID)
+	if err != nil {
+		return nil, err
+	}
+	defer stmt.Close()
+
+	err = stmt.QueryRow(ID).Scan(&f.ID, &f.Name, &f.Ext, &f.Data)
+
+	switch {
+	case err == sql.ErrNoRows:
+		log.Printf("User with ID %d not found", ID)
+		return nil, err
+	case err != nil:
+		log.Printf("Error on find file %s", err)
+		return nil, err
+	default:
+		return &f, nil
+	}
+}
+
+func DeleteFile(ID int) error {
+
+	db := env.GetConnection()
+
+	_, err := FindFileByID(ID)
+	if err != nil {
+		return err
+	}
+
+	stmt, err := db.Prepare(dml.DeleteFile)
+
+	if err != nil {
+		return err
+	}
+
+	defer stmt.Close()
+
+	tx, err := db.Begin()
+	defer tx.Commit()
+
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	_, err = tx.Stmt(stmt).Exec(ID)
+
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return nil
+}

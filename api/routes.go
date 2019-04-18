@@ -88,4 +88,10 @@ var routes = Routes{
 		"/files/{username}",
 		fileFindAllByUsername,
 	},
+	Route{
+		"FileDelete",
+		"DELETE",
+		"/files/{ID}",
+		fileDelete,
+	},
 }

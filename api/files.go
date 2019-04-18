@@ -127,3 +127,24 @@ func fileFindAllByUsername(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func fileDelete(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["ID"])
+	if err != nil {
+		log.Println(err)
+		request.Handle500(w, err)
+		return
+	}
+	err = repository.DeleteFile(id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			log.Println(err)
+			request.Handle404(w)
+			return
+		}
+		request.Handle500(w, err)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
