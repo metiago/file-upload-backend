@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"time"
 
@@ -30,19 +29,6 @@ func AddUser(u *User) (*User, error) {
 
 	if err != nil {
 		log.Printf("Error inserting user: %v", err)
-		tx.Rollback()
-		return nil, err
-	}
-
-	r, err := FindRoleByID(u.Role.ID)
-	if r == nil {
-		tx.Rollback()
-		return nil, fmt.Errorf("Role with ID %d not found ", u.Role.ID)
-	}
-
-	_, err = tx.Exec(dml.AddUserRole, id, r.ID)
-	if err != nil {
-		log.Printf("Error inserting role for user: %v", err)
 		tx.Rollback()
 		return nil, err
 	}
@@ -79,25 +65,7 @@ func UpdateUser(ID int, u *User) (*User, error) {
 		return nil, err
 	}
 
-	stmt, err = db.Prepare(dml.UpdateUserRole)
-	if err != nil {
-		tx.Rollback()
-		return nil, err
-	}
 	defer stmt.Close()
-
-	r, err := FindRoleByID(u.Role.ID)
-	if r == nil || r.ID == 0 {
-		tx.Rollback()
-		return nil, fmt.Errorf("Role with ID %d not found ", u.Role.ID)
-	}
-
-	_, err = tx.Stmt(stmt).Exec(r.ID, ID)
-	if err != nil {
-		log.Println(err)
-		tx.Rollback()
-		return nil, err
-	}
 
 	tx.Commit()
 
@@ -113,7 +81,7 @@ func FindAllUsers() ([]User, error) {
 	defer rows.Close()
 
 	var u User
-	var s = make([]User, 0)
+	var users = make([]User, 0)
 
 	for rows.Next() {
 		err = rows.Scan(&u.ID, &u.Name, &u.Email, &u.Username, &u.Created)
@@ -122,15 +90,10 @@ func FindAllUsers() ([]User, error) {
 			return nil, err
 		}
 
-		u.Role, err = FindRoleByUserID(u.ID)
-		if err != nil {
-			return nil, err
-		}
-
-		s = append(s, u)
+		users = append(users, u)
 	}
 
-	return s, err
+	return users, err
 }
 
 func FindUserByID(ID int) (*User, error) {

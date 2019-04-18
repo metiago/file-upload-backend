@@ -20,6 +20,7 @@ type Routes []Route
 func NewRouter() *mux.Router {
 
 	apiRouter := mux.NewRouter().StrictSlash(false)
+
 	for _, route := range routes {
 		var handler http.Handler
 		handler = route.HandlerFunc
@@ -32,11 +33,14 @@ func NewRouter() *mux.Router {
 
 	// Public routes
 	auth := router.PathPrefix("/auth").Subrouter()
-	auth.HandleFunc("/login", loginHandler).Methods("POST")
+	authHandler := http.HandlerFunc(loginHandler)
+	auth.Handle("/login", middleware.Logger(authHandler, "/auth")).Methods("POST")
 
 	public := router.PathPrefix("/").Subrouter()
-	public.HandleFunc("/", index).Methods("GET")
-	public.HandleFunc("/users", userAdd).Methods("POST")
+	indexHandler := http.HandlerFunc(index)
+	signUpHandler := http.HandlerFunc(userAdd)
+	public.Handle("/", middleware.Logger(indexHandler, "/")).Methods("GET")
+	public.Handle("/signup", middleware.Logger(signUpHandler, "/signup")).Methods("POST")
 
 	return router
 }
@@ -65,36 +69,6 @@ var routes = Routes{
 		"DELETE",
 		"/users/{ID}",
 		userDelete,
-	},
-	Route{
-		"RoleFindAll",
-		"GET",
-		"/roles",
-		roleFindAll,
-	},
-	Route{
-		"RoleFindOne",
-		"GET",
-		"/roles/{ID}",
-		roleFindOne,
-	},
-	Route{
-		"RoleAdd",
-		"POST",
-		"/roles",
-		roleAdd,
-	},
-	Route{
-		"RoleUpdate",
-		"PUT",
-		"/roles/{ID}",
-		roleUpdate,
-	},
-	Route{
-		"RoleDelete",
-		"DELETE",
-		"/roles/{ID}",
-		roleDelete,
 	},
 	Route{
 		"FileUpload",

@@ -22,13 +22,6 @@ type File struct {
 	Username   string       `json:"username"`
 }
 
-// Role is a type to define users roles in the system
-type Role struct {
-	ID      int       `json:"id"`
-	Name    string    `json:"name"`
-	Created time.Time `json:"created"`
-}
-
 // User is a type to define users
 type User struct {
 	ID       int       `json:"id"`
@@ -37,6 +30,5 @@ type User struct {
 	Username string    `json:"username"`
 	Password string    `json:"password"`
 	Created  time.Time `json:"created"`
-	Role     *Role     `json:"role"`
 	Files    []*File   `json:"files"`
 }

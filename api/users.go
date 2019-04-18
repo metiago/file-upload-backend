@@ -86,6 +86,7 @@ func userAdd(w http.ResponseWriter, r *http.Request) {
 
 	vals := helper.Validate(s)
 	if len(vals) > 0 {
+		// TODO Set http 400 status
 		json.NewEncoder(w).Encode(vals)
 		return
 	}

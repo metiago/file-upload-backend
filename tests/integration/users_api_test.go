@@ -6,13 +6,13 @@ import (
 	"log"
 	"strconv"
 	"testing"
-	"time"
 
 	"github.com/metiago/zbx1/common/request"
 	"github.com/metiago/zbx1/repository"
 )
 
 var usersPathURL = "api/v1/users"
+var signUpURL = "signup"
 
 func init() {
 	mountBackEndURL()
@@ -20,36 +20,30 @@ func init() {
 
 func TestAddUser(t *testing.T) {
 
-	r := repository.Role{ID: 1, Name: "ADMIN"}
 	u := &repository.User{
 		Name:     "AAA",
 		Email:    "ziggy@gmail.com",
 		Username: "bbb",
-		Password: "doggy",
-		Role:     &r,
-		Created:  time.Now()}
+		Password: "doggy"}
 	data, err := json.Marshal(u)
 	if err != nil {
 		t.Error(err)
 	}
-	status := request.PostHTTP(fmt.Sprintf("%s/%s", baseURL, usersPathURL), token, data)
+	status := request.PostHTTP(fmt.Sprintf("%s/%s", baseURL, signUpURL), "", data)
 	expected := 201
 	if status != expected {
-		t.Errorf("Status was: %d", status)
+		t.Errorf("Expected is %d but was: %d", expected, status)
 	}
 }
 
 func TestUpdateUser(t *testing.T) {
 	anyUser := getAnyUser()
-	anyRole := getAnyRole()
-	r := repository.Role{ID: anyRole.ID, Name: ""}
+
 	u := &repository.User{
 		Name:     "Ziggy Update",
 		Email:    "ziggy_update@gmail.com",
 		Username: "ziggy_update",
-		Password: "doggy_update",
-		Role:     &r,
-		Created:  time.Now()}
+		Password: "doggy_update"}
 	data, err := json.Marshal(u)
 	if err != nil {
 		t.Error(err)
@@ -58,7 +52,7 @@ func TestUpdateUser(t *testing.T) {
 	status := request.PutHTTP(fmt.Sprintf("%s/%s/%s", baseURL, usersPathURL, id), token, data)
 	expected := 200
 	if status != expected {
-		t.Errorf("Status was: %d", status)
+		t.Errorf("Expected is %d but was: %d", expected, status)
 	}
 }
 
@@ -76,7 +70,7 @@ func TestFindOneUser(t *testing.T) {
 
 	expected := 200
 	if status != expected {
-		t.Errorf("Status was: %d", status)
+		t.Errorf("Expected is %d but was: %d", expected, status)
 	}
 
 	if u == nil {
@@ -96,7 +90,7 @@ func TestFindAllUsers(t *testing.T) {
 
 	expected := 200
 	if status != expected {
-		t.Errorf("Status was: %d", status)
+		t.Errorf("Expected is %d but was: %d", expected, status)
 	}
 
 	if len(users) == 0 {
@@ -113,7 +107,7 @@ func TestDeleteUser(t *testing.T) {
 
 	expected := 204
 	if status != expected {
-		t.Errorf("Status was: %d", status)
+		t.Errorf("Expected is %d but was: %d", expected, status)
 	}
 }
 

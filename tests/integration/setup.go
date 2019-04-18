@@ -12,7 +12,7 @@ import (
 
 var baseURL string
 
-var authPathURL = "auth/signin"
+var authPathURL = "auth/login"
 
 var token string
 
