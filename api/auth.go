@@ -92,10 +92,9 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		"nbf": time.Date(2015, 10, 10, 12, 0, 0, 0, time.UTC).Unix(),
 		"exp": time.Now().Add(time.Minute * 60).Unix(),
 		"uinf": struct {
-			ID   int
-			Name string
-			Role string
-		}{u.ID, u.Name, "Member"},
+			ID       int
+			Username string
+		}{u.ID, u.Username},
 	})
 
 	tokenString, err := hash.SignedString(signKey)
