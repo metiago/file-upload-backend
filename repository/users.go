@@ -13,6 +13,8 @@ import (
 
 func AddUser(u *User) (*User, error) {
 
+	// TODO check if user exists before add one and implement tests
+
 	u.Password, _ = helper.HashPassword(u.Password)
 
 	db := env.GetConnection()

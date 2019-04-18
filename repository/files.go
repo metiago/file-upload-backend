@@ -76,7 +76,6 @@ func FileDownload(ID int) (*File, error) {
 	}
 }
 
-// FindaAllFilesByUsername get all files by a give username
 func FindaAllFilesByUsername(username string) ([]File, error) {
 	rows, err := env.GetConnection().Query(dml.FindAllFilesByUsername, username)
 	if err != nil {
@@ -100,6 +99,7 @@ func FindaAllFilesByUsername(username string) ([]File, error) {
 	return fl, err
 }
 
+// TODO Implement test
 func fileExists(u User, f File) (bool, error) {
 
 	rows, err := env.GetConnection().Query(dml.FileExist, u.Username, f.Name)
@@ -115,6 +115,7 @@ func fileExists(u User, f File) (bool, error) {
 	return false, nil
 }
 
+// TODO Implement test
 func FindFileByID(ID int) (*File, error) {
 
 	var f File
@@ -139,6 +140,7 @@ func FindFileByID(ID int) (*File, error) {
 	}
 }
 
+// TODO Implement test
 func DeleteFile(ID int) error {
 
 	db := env.GetConnection()
