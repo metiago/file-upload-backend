@@ -62,7 +62,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// FIXME: MOVE TO DI SERVICE
+	// TODO: MOVE TO DI SERVICE
 	u, err := repository.FindUserByUsername(user.Username)
 	if err != nil {
 		if err == sql.ErrNoRows {

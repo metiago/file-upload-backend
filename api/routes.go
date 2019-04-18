@@ -28,14 +28,15 @@ func NewRouter() *mux.Router {
 	}
 
 	router := mux.NewRouter()
-	router.PathPrefix("/api").Handler(negroni.New(negroni.Wrap(apiRouter)))
-	// router.PathPrefix("/api").Handler(negroni.New(negroni.HandlerFunc(authHandler), negroni.Wrap(apiRouter)))
+	router.PathPrefix("/api").Handler(negroni.New(negroni.HandlerFunc(authHandler), negroni.Wrap(apiRouter)))
 
+	// Public routes
 	auth := router.PathPrefix("/auth").Subrouter()
-	auth.HandleFunc("/signin", loginHandler).Methods("POST")
+	auth.HandleFunc("/login", loginHandler).Methods("POST")
 
-	dash := router.PathPrefix("/").Subrouter()
-	dash.HandleFunc("/", index).Methods("GET")
+	public := router.PathPrefix("/").Subrouter()
+	public.HandleFunc("/", index).Methods("GET")
+	public.HandleFunc("/users", userAdd).Methods("POST")
 
 	return router
 }
@@ -52,12 +53,6 @@ var routes = Routes{
 		"GET",
 		"/users/{ID}",
 		userFindOne,
-	},
-	Route{
-		"UserAdd",
-		"POST",
-		"/users",
-		userAdd,
 	},
 	Route{
 		"UserUpdate",

@@ -5,6 +5,7 @@ import (
 	"reflect"
 )
 
+// TODO CREATE A GO MODULE LIB
 // Validate a struct fields by reflection
 func Validate(x interface{}) []string {
 	v := reflect.ValueOf(x).Elem()
@@ -16,5 +17,3 @@ func Validate(x interface{}) []string {
 	}
 	return values
 }
-
-// TODO: EXTRACT IT TO A MODULE

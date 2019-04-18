@@ -24,7 +24,7 @@ func init() {
 		log.Fatal("You must export database environment variables.")
 	}
 	settings = fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, username, password, database)
-	log.Println("Connecting to database:", settings)
+	log.Println("Established connection to:", settings)
 }
 
 // GetConnection is responsible to get mysql connection
