@@ -8,4 +8,4 @@ const FindFileByID string = "SELECT id, f_name, f_ext, f_data FROM zbx1.files WH
 
 const FindAllFilesByUsername string = "SELECT f.id, f.f_name, f.f_ext, f.f_created, f.f_data, u.u_name FROM zbx1.files f INNER JOIN zbx1.users_files uf ON f.id = uf.file_id INNER JOIN zbx1.users u ON u.id = uf.user_id WHERE u.u_username = ($1)"
 
-const FileExist string = "SELECT f_name FROM zbx1.files where f_name = $1"
+const FileExist string = "SELECT f.f_name FROM zbx1.files f inner join zbx1.users_files uf on uf.file_id = f.id and uf.user_id = (select id from zbx1.users where u_username = $1) where f_name = $2 "

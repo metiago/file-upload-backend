@@ -106,7 +106,7 @@ func FindUserByID(ID int) (*User, error) {
 	}
 	defer stmt.Close()
 
-	err = stmt.QueryRow(ID).Scan(&u.ID, &u.Name, &u.Email, &u.Password, &u.Created)
+	err = stmt.QueryRow(ID).Scan(&u.ID, &u.Name, &u.Email, &u.Username, &u.Created)
 
 	switch {
 	case err == sql.ErrNoRows:
