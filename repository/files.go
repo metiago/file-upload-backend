@@ -102,7 +102,7 @@ func FindaAllFilesByUsername(username string) ([]File, error) {
 
 func fileExists(u User, f File) (bool, error) {
 
-	rows, err := env.GetConnection().Query(dml.FileExist, f.Name, u.Username)
+	rows, err := env.GetConnection().Query(dml.FileExist, u.Username, f.Name)
 	if err != nil {
 		return false, err
 	}
