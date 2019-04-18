@@ -17,8 +17,7 @@ CREATE TABLE zbx1.files (
     f_name varchar(50) not null,
     f_ext varchar(5) not null,
     f_created timestamp not null,
-    f_data BYTEA not null,
-    UNIQUE (f_name)
+    f_data BYTEA not null
 );
 
 CREATE TABLE zbx1.privileges (
