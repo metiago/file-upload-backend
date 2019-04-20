@@ -21,10 +21,10 @@ func init() {
 func TestAddUser(t *testing.T) {
 
 	u := &repository.User{
-		Name:     "AAA",
-		Email:    "ziggy@gmail.com",
-		Username: "bbb",
-		Password: "doggy"}
+		Name:     "Bapi",
+		Email:    "bapi@gmail.com",
+		Username: "bapi",
+		Password: "123XFS"}
 	data, err := json.Marshal(u)
 	if err != nil {
 		t.Error(err)
@@ -40,9 +40,71 @@ func TestUpdateUser(t *testing.T) {
 	anyUser := getAnyUser()
 
 	u := &repository.User{
+		Name:     "Ziggy",
+		Email:    "ziggy@gmail.com",
+		Username: "ziggy",
+		Password: "ziggy123"}
+	data, err := json.Marshal(u)
+	if err != nil {
+		t.Error(err)
+	}
+	id := strconv.Itoa(anyUser.ID)
+	status := request.PutHTTP(fmt.Sprintf("%s/%s/%s", baseURL, usersPathURL, id), token, data)
+	expected := 200
+	if status != expected {
+		t.Errorf("Expected is %d but was: %d", expected, status)
+	}
+}
+
+func TestAddExistingUserThanFail(t *testing.T) {
+
+	u := &repository.User{
+		Name:     "AAA",
+		Email:    "ziggy@gmail.com",
+		Username: "metiago",
+		Password: "doggy"}
+	data, err := json.Marshal(u)
+	if err != nil {
+		t.Error(err)
+	}
+
+	status := request.PostHTTP(fmt.Sprintf("%s/%s", baseURL, signUpURL), "", data)
+
+	expected := 400
+	if status != expected {
+		t.Errorf("Expected is %d but was: %d", expected, status)
+	}
+}
+
+func TestUpdateExistingUserThanFail(t *testing.T) {
+
+	anyUser := getAnyUser()
+
+	u := &repository.User{
 		Name:     "Ziggy Update",
 		Email:    "ziggy_update@gmail.com",
-		Username: "ziggy_update",
+		Username: "metiago",
+		Password: "doggy_update"}
+	data, err := json.Marshal(u)
+	if err != nil {
+		t.Error(err)
+	}
+	id := strconv.Itoa(anyUser.ID)
+	status := request.PutHTTP(fmt.Sprintf("%s/%s/%s", baseURL, usersPathURL, id), token, data)
+	expected := 400
+	if status != expected {
+		t.Errorf("Expected is %d but was: %d", expected, status)
+	}
+}
+
+func TestUpdateExistingUserThanOK(t *testing.T) {
+
+	anyUser := getAnyUser()
+
+	u := &repository.User{
+		Name:     "Ziggy Update",
+		Email:    "ziggy_update@gmail.com",
+		Username: anyUser.Username,
 		Password: "doggy_update"}
 	data, err := json.Marshal(u)
 	if err != nil {
