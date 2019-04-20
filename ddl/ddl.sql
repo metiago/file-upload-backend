@@ -14,7 +14,7 @@ CREATE TABLE zbx1.users (
 
 CREATE TABLE zbx1.files (
     id serial not null primary key,
-    f_name varchar(50) not null,
+    f_name varchar(250) not null,
     f_ext varchar(5) not null,
     f_created timestamp not null,
     f_data BYTEA not null

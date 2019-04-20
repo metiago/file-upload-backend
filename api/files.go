@@ -71,6 +71,7 @@ func fileUpload(w http.ResponseWriter, r *http.Request) {
 
 			log.Println(err)
 			request.Handle500(w, err)
+			return
 		}
 
 	}
