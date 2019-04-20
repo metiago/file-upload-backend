@@ -38,7 +38,6 @@ func Token(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r.WithContext(ctx))
 		} else {
 			request.Handle403(w)
-			next.ServeHTTP(w, r)
 		}
 	})
 }

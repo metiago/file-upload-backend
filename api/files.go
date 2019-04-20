@@ -24,6 +24,7 @@ const (
 	maxSizeInByte int64  = 16000000
 )
 
+// TODO When upload a folder it crashes
 func fileUpload(w http.ResponseWriter, r *http.Request) {
 
 	r.Body = http.MaxBytesReader(w, r.Body, maxSizeInByte)

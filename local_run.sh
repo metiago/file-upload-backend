@@ -12,4 +12,6 @@ export DB_DATABASE=postgres
 export PRI_RSA=rsa/app.rsa
 export PUB_RSA=rsa/app.rsa.pub
 
-go run main.go
+go build -o zbx1
+
+./zbx1
