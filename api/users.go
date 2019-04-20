@@ -25,6 +25,7 @@ func userFindAll(w http.ResponseWriter, r *http.Request) {
 		request.Handle500(w, err)
 		return
 	}
+
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(us); err != nil {
 		log.Println(err)
@@ -34,13 +35,16 @@ func userFindAll(w http.ResponseWriter, r *http.Request) {
 }
 
 func userFindOne(w http.ResponseWriter, r *http.Request) {
+
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["ID"])
+
 	if err != nil {
 		log.Println(err)
 		request.Handle500(w, err)
 		return
 	}
+
 	u, err := repository.FindUserByID(id)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -52,6 +56,7 @@ func userFindOne(w http.ResponseWriter, r *http.Request) {
 		request.Handle500(w, err)
 		return
 	}
+
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(u); err != nil {
 		log.Println(err)
@@ -64,7 +69,6 @@ func userAdd(w http.ResponseWriter, r *http.Request) {
 
 	// READ JSON REQUEST BODY
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
-	// CHECK FOR ERROR
 	if err != nil {
 		log.Println(err)
 		request.Handle500(w, err)
@@ -94,6 +98,13 @@ func userAdd(w http.ResponseWriter, r *http.Request) {
 	// ADD TO DATABASE
 	_, err = repository.AddUser(s)
 	if err != nil {
+
+		if err == repository.ErrUsernameExists {
+			log.Println(err)
+			request.Handle400(w, err)
+			return
+		}
+
 		log.Println(err)
 		request.Handle500(w, err)
 		return
@@ -103,31 +114,45 @@ func userAdd(w http.ResponseWriter, r *http.Request) {
 }
 
 func userUpdate(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
+
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 	if err != nil {
 		log.Println(err)
 		request.Handle500(w, err)
 		return
 	}
+
 	if err := r.Body.Close(); err != nil {
 		log.Println(err)
 		return
 	}
+
 	var u *repository.User
 	if err := json.Unmarshal(body, &u); err != nil {
 		log.Println(err)
 		request.Handle400(w, err)
 		return
 	}
+
+	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["ID"])
 	if err != nil {
 		log.Println(err)
 		request.Handle500(w, err)
 		return
+
 	}
-	_, err = repository.UpdateUser(id, u)
+
+	u.ID = id
+	_, err = repository.UpdateUser(u)
 	if err != nil {
+
+		if err == repository.ErrUsernameExists {
+			log.Println(err)
+			request.Handle400(w, err)
+			return
+		}
+
 		log.Println(err)
 		request.Handle500(w, err)
 		return
