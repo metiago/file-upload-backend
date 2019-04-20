@@ -14,14 +14,10 @@ var ErrFileExists = errors.New("File already exists")
 
 func FileUpload(u User, f File) error {
 
-	exists, err := fileExists(u, f)
+	err := fileExists(u, f)
 	if err != nil {
 		log.Println(err)
 		return err
-	}
-
-	if exists {
-		return ErrFileExists
 	}
 
 	db := env.GetConnection()
@@ -99,23 +95,21 @@ func FindaAllFilesByUsername(username string) ([]File, error) {
 	return fl, err
 }
 
-// TODO Implement test
-func fileExists(u User, f File) (bool, error) {
+func fileExists(u User, f File) error {
 
 	rows, err := env.GetConnection().Query(dml.FileExist, u.Username, f.Name)
 	if err != nil {
-		return false, err
+		return err
 	}
 	defer rows.Close()
 
 	for rows.Next() {
-		return true, nil
+		return ErrFileExists
 	}
 
-	return false, nil
+	return nil
 }
 
-// TODO Implement test
 func FindFileByID(ID int) (*File, error) {
 
 	var f File
@@ -140,7 +134,6 @@ func FindFileByID(ID int) (*File, error) {
 	}
 }
 
-// TODO Implement test
 func DeleteFile(ID int) error {
 
 	db := env.GetConnection()

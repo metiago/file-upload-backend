@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"errors"
 	"log"
 	"time"
 
@@ -11,11 +12,17 @@ import (
 	"github.com/metiago/zbx1/common/helper"
 )
 
+var ErrUsernameExists = errors.New("Username already exists")
+
 func AddUser(u *User) (*User, error) {
 
-	// TODO check if user exists before add one and implement tests
+	err := userExists(u)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
 
-	u.Password, _ = helper.HashPassword(u.Password)
+	u.Password, _ = helper.EncryptPassword(u.Password)
 
 	db := env.GetConnection()
 
@@ -40,9 +47,15 @@ func AddUser(u *User) (*User, error) {
 	return u, err
 }
 
-func UpdateUser(ID int, u *User) (*User, error) {
+func UpdateUser(u *User) (*User, error) {
 
-	u.Password, _ = helper.HashPassword(u.Password)
+	err := userExists(u)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	u.Password, _ = helper.EncryptPassword(u.Password)
 
 	db := env.GetConnection()
 
@@ -59,7 +72,7 @@ func UpdateUser(ID int, u *User) (*User, error) {
 		return nil, err
 	}
 
-	_, err = tx.Stmt(stmt).Exec(u.Name, u.Email, u.Username, u.Password, time.Now(), ID)
+	_, err = tx.Stmt(stmt).Exec(u.Name, u.Email, u.Username, u.Password, time.Now(), u.ID)
 
 	if err != nil {
 		log.Println(err)
@@ -179,7 +192,6 @@ func DeleteUser(ID int) error {
 	return nil
 }
 
-// RepoAuthUser is to check if user's credentials are ok
 func AuthUser(username string, password string) (bool, error) {
 
 	var u User
@@ -190,6 +202,7 @@ func AuthUser(username string, password string) (bool, error) {
 		return false, err
 	}
 	defer stmt.Close()
+
 	err = stmt.QueryRow(username).Scan(&u.Username, &u.Password)
 	switch {
 	case err == sql.ErrNoRows:
@@ -200,5 +213,25 @@ func AuthUser(username string, password string) (bool, error) {
 		return false, err
 	default:
 		return helper.CheckPasswordHash(password, u.Password), nil
+	}
+}
+
+func userExists(user *User) error {
+
+	stmt, err := env.GetConnection().Prepare(dml.FindUserByUsername)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	var u User
+	err = stmt.QueryRow(user.Username).Scan(&u.ID, &u.Name, &u.Email, &u.Username, &u.Created)
+
+	if err == sql.ErrNoRows {
+		return nil
+	} else if u.ID == user.ID {
+		return nil
+	} else {
+		return ErrUsernameExists
 	}
 }
