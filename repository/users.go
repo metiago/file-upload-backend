@@ -47,6 +47,7 @@ func AddUser(u *User) (*User, error) {
 	return u, err
 }
 
+// TODO Create function to update password
 func UpdateUser(u *User) (*User, error) {
 
 	err := userExists(u)
@@ -54,8 +55,6 @@ func UpdateUser(u *User) (*User, error) {
 		log.Println(err)
 		return nil, err
 	}
-
-	u.Password, _ = helper.EncryptPassword(u.Password)
 
 	db := env.GetConnection()
 
@@ -72,7 +71,7 @@ func UpdateUser(u *User) (*User, error) {
 		return nil, err
 	}
 
-	_, err = tx.Stmt(stmt).Exec(u.Name, u.Email, u.Username, u.Password, time.Now(), u.ID)
+	_, err = tx.Stmt(stmt).Exec(u.Name, u.Email, u.Username, time.Now(), u.ID)
 
 	if err != nil {
 		log.Println(err)

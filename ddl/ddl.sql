@@ -9,7 +9,7 @@ CREATE TABLE zbx1.users (
     u_username varchar(50) not null,
     u_password varchar(255) not null,
     u_created timestamp not null,
-    UNIQUE(u_name)
+    UNIQUE(u_username)
 );
 
 CREATE TABLE zbx1.files (
