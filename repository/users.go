@@ -291,5 +291,5 @@ func userExists(user *User) (*User, error) {
 }
 
 func isPasswordEqual(u *User) bool {
-	return u.Password == u.ConfirmPassword
+	return u.ConfirmPassword == u.UpdatedPassword
 }
