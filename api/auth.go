@@ -14,7 +14,8 @@ import (
 
 	jwt "github.com/dgrijalva/jwt-go"
 	jwtrequest "github.com/dgrijalva/jwt-go/request"
-	"github.com/metiago/zbx1/common/request"
+
+	"github.com/metiago/zbx1/common/helper"
 
 	"github.com/metiago/zbx1/repository"
 )
@@ -58,20 +59,20 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		log.Println(err)
-		request.Handle400(w, err)
+		helper.Handle400(w, err)
 		return
 	}
 
-	// TODO: MOVE TO DI SERVICE
+	// TODO: Chenge to use DI pattern
 	u, err := repository.FindUserByUsername(user.Username)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			log.Println(err)
-			request.Handle401(w)
+			helper.Handle401(w)
 			return
 		}
 		log.Println(err)
-		request.Handle500(w, err)
+		helper.Handle500(w, err)
 		return
 	}
 
@@ -79,11 +80,11 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	ok, err := repository.AuthUser(user.Username, user.Password)
 	if err != nil {
 		log.Println(err)
-		request.Handle500(w, err)
+		helper.Handle500(w, err)
 	}
 
 	if !ok {
-		request.Handle401(w)
+		helper.Handle401(w)
 		return
 	}
 
@@ -108,7 +109,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 func authHandler(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 
 	if r.Header.Get("Authorization") == "" {
-		request.Handle403(w)
+		helper.Handle403(w)
 		return
 	}
 
@@ -129,21 +130,21 @@ func authHandler(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) 
 			vErr := err.(*jwt.ValidationError)
 			switch vErr.Errors {
 			case jwt.ValidationErrorExpired:
-				request.Handle406(w)
+				helper.Handle406(w)
 				return
 			default:
-				request.Handle403(w)
+				helper.Handle403(w)
 				return
 			}
 		default:
-			request.Handle403(w)
+			helper.Handle403(w)
 			return
 		}
 	}
 	if token.Valid {
 		next(w, r)
 	} else {
-		request.Handle403(w)
+		helper.Handle403(w)
 	}
 }
 
@@ -151,7 +152,7 @@ func tokenResponse(response token, w http.ResponseWriter) {
 	json, err := json.Marshal(response)
 	if err != nil {
 		log.Println(err)
-		request.Handle500(w, err)
+		helper.Handle500(w, err)
 		return
 	}
 	w.WriteHeader(http.StatusOK)

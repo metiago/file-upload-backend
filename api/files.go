@@ -14,7 +14,6 @@ import (
 	"github.com/mitchellh/mapstructure"
 
 	"github.com/metiago/zbx1/common/helper"
-	"github.com/metiago/zbx1/common/request"
 
 	"github.com/metiago/zbx1/repository"
 )
@@ -24,20 +23,20 @@ const (
 	maxSizeInByte int64  = 16000000
 )
 
-// TODO When upload a folder it crashes
+// FIXME When upload a folder it crashes
 func fileUpload(w http.ResponseWriter, r *http.Request) {
 
 	r.Body = http.MaxBytesReader(w, r.Body, maxSizeInByte)
 	if err := r.ParseMultipartForm(maxSizeInByte); err != nil {
 		log.Println(err)
-		request.Handle500(w, err)
+		helper.Handle500(w, err)
 		return
 	}
 
 	file, handler, err := r.FormFile("file")
 	if err != nil {
 		log.Println(err)
-		request.Handle500(w, err)
+		helper.Handle500(w, err)
 		return
 	}
 	defer file.Close()
@@ -45,7 +44,7 @@ func fileUpload(w http.ResponseWriter, r *http.Request) {
 	buf := bytes.NewBuffer(nil)
 	if _, err := io.Copy(buf, file); err != nil {
 		log.Println(err)
-		request.Handle500(w, err)
+		helper.Handle500(w, err)
 		return
 	}
 
@@ -65,12 +64,12 @@ func fileUpload(w http.ResponseWriter, r *http.Request) {
 
 			if err == repository.ErrFileExists {
 				log.Println(err)
-				request.Handle400(w, err)
+				helper.Handle400(w, err)
 				return
 			}
 
 			log.Println(err)
-			request.Handle500(w, err)
+			helper.Handle500(w, err)
 			return
 		}
 
@@ -84,17 +83,17 @@ func fileDownload(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["ID"])
 	if err != nil {
-		request.Handle500(w, err)
+		helper.Handle500(w, err)
 		return
 	}
 
 	f, err := repository.FileDownload(id)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			request.Handle404(w)
+			helper.Handle404(w)
 			return
 		}
-		request.Handle500(w, err)
+		helper.Handle500(w, err)
 		return
 	}
 
@@ -120,12 +119,12 @@ func fileFindAllByUsername(w http.ResponseWriter, r *http.Request) {
 	username := vars["username"]
 	result, err := repository.FindaAllFilesByUsername(username)
 	if err != nil {
-		request.Handle500(w, err)
+		helper.Handle500(w, err)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(result); err != nil {
-		request.Handle500(w, err)
+		helper.Handle500(w, err)
 		return
 	}
 }
@@ -135,17 +134,17 @@ func fileDelete(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(vars["ID"])
 	if err != nil {
 		log.Println(err)
-		request.Handle500(w, err)
+		helper.Handle500(w, err)
 		return
 	}
 	err = repository.DeleteFile(id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			log.Println(err)
-			request.Handle404(w)
+			helper.Handle404(w)
 			return
 		}
-		request.Handle500(w, err)
+		helper.Handle500(w, err)
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)

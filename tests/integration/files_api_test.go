@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/metiago/zbx1/common/request"
+	"github.com/metiago/zbx1/common/helper"
 	"github.com/metiago/zbx1/repository"
 )
 
@@ -22,7 +22,7 @@ func TestFileUploadThenOK(t *testing.T) {
 
 	fileToUpload := "int-tests.txt"
 
-	status := request.PostMultiPart(fmt.Sprintf("%s/%s", baseURL, filesUploadPathURL), token, fileToUpload)
+	status := helper.PostMultiPart(fmt.Sprintf("%s/%s", baseURL, filesUploadPathURL), token, fileToUpload)
 
 	expected := 201
 	if status != expected {
@@ -34,7 +34,7 @@ func TestFileUploadThenError(t *testing.T) {
 
 	fileToUpload := "int-tests.txt"
 
-	status := request.PostMultiPart(fmt.Sprintf("%s/%s", baseURL, filesUploadPathURL), "", fileToUpload)
+	status := helper.PostMultiPart(fmt.Sprintf("%s/%s", baseURL, filesUploadPathURL), "", fileToUpload)
 
 	expected := 403
 	if status != expected {
@@ -47,7 +47,7 @@ func TestDeleteFile(t *testing.T) {
 	file := getAnyFile()
 	id := strconv.Itoa(file.ID)
 
-	status := request.DeleteHTTP(fmt.Sprintf("%s/%s/%s", baseURL, filesPathURL, id), token)
+	status := helper.DeleteHTTP(fmt.Sprintf("%s/%s/%s", baseURL, filesPathURL, id), token)
 
 	expected := 204
 	if status != expected {
@@ -56,7 +56,7 @@ func TestDeleteFile(t *testing.T) {
 }
 
 func getAnyFile() *repository.File {
-	body, _ := request.GetHTTP(fmt.Sprintf("%s/%s/%s", baseURL, filesPathURL, "metiago"), token)
+	body, _ := helper.GetHTTP(fmt.Sprintf("%s/%s/%s", baseURL, filesPathURL, "metiago"), token)
 	var files []*repository.File
 	var file *repository.File
 	if err := json.Unmarshal(body, &files); err != nil {

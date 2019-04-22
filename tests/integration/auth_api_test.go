@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/metiago/zbx1/common/request"
+	"github.com/metiago/zbx1/common/helper"
 	"github.com/metiago/zbx1/repository"
 )
 
@@ -25,7 +25,7 @@ func TestAuthUserOK(t *testing.T) {
 		t.Error(err)
 	}
 
-	status := request.PostHTTP(fmt.Sprintf("%s/%s", baseURL, authPathURL), "", data)
+	status := helper.PostHTTP(fmt.Sprintf("%s/%s", baseURL, authPathURL), "", data)
 
 	expected := 200
 	if status != expected {
@@ -45,7 +45,7 @@ func TestAuthUserThanFail(t *testing.T) {
 		t.Error(err)
 	}
 
-	status := request.PostHTTP(fmt.Sprintf("%s/%s", baseURL, authPathURL), "", data)
+	status := helper.PostHTTP(fmt.Sprintf("%s/%s", baseURL, authPathURL), "", data)
 
 	expected := 401
 	if status != expected {

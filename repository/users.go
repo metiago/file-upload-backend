@@ -13,47 +13,59 @@ import (
 )
 
 var ErrUsernameExists = errors.New("Username already exists")
+var ErrMatchPassword = errors.New("Old password not match")
+var ErrCheckPasswordEquality = errors.New("Password and confirmation password must be equals")
 
 func AddUser(u *User) (*User, error) {
 
-	err := userExists(u)
-	if err != nil {
-		log.Println(err)
+	existentUser, err := userExists(u)
+	if err != nil && err != sql.ErrNoRows {
 		return nil, err
 	}
 
-	u.Password, _ = helper.EncryptPassword(u.Password)
+	if existentUser.ID == 0 {
 
-	db := env.GetConnection()
+		u.Password, _ = helper.EncryptPassword(u.Password)
 
-	tx, err := db.Begin()
+		db := env.GetConnection()
 
-	if err != nil {
-		log.Println(err)
-		return nil, err
+		tx, err := db.Begin()
+
+		if err != nil {
+			log.Println(err)
+			return nil, err
+		}
+
+		var id int
+		err = tx.QueryRow(dml.AddUser, u.Name, u.Email, u.Username, u.Password, time.Now()).Scan(&id)
+
+		if err != nil {
+			log.Printf("Error inserting user: %v", err)
+			tx.Rollback()
+			return nil, err
+		}
+
+		tx.Commit()
+
+		return u, nil
 	}
 
-	var id int
-	err = tx.QueryRow(dml.AddUser, u.Name, u.Email, u.Username, u.Password, time.Now()).Scan(&id)
-
-	if err != nil {
-		log.Printf("Error inserting user: %v", err)
-		tx.Rollback()
-		return nil, err
-	}
-
-	tx.Commit()
-
-	return u, err
+	return nil, ErrUsernameExists
 }
 
-// TODO Create function to update password
 func UpdateUser(u *User) (*User, error) {
 
-	err := userExists(u)
-	if err != nil {
-		log.Println(err)
+	if !isPasswordEqual(u) {
+		return nil, ErrCheckPasswordEquality
+	}
+
+	existentUser, err := userExists(u)
+	if err != nil && err != sql.ErrNoRows {
 		return nil, err
+	}
+
+	if existentUser.ID != 0 && existentUser.ID != u.ID {
+		return nil, ErrUsernameExists
 	}
 
 	db := env.GetConnection()
@@ -83,7 +95,57 @@ func UpdateUser(u *User) (*User, error) {
 
 	tx.Commit()
 
-	return u, err
+	return u, nil
+
+}
+
+func UpdateUserPassword(u *User) (*User, error) {
+
+	if !isPasswordEqual(u) {
+		return nil, ErrCheckPasswordEquality
+	}
+
+	existentUser, err := FindUserByUsername(u.Username)
+	if err != nil {
+		return nil, err
+	}
+
+	match := helper.CheckPasswordHash(u.Password, existentUser.Password)
+
+	if match {
+
+		db := env.GetConnection()
+
+		stmt, err := db.Prepare(dml.UpdateUserPassword)
+		if err != nil {
+			return nil, err
+		}
+		defer stmt.Close()
+
+		tx, err := db.Begin()
+
+		if err != nil {
+			log.Println(err)
+			return nil, err
+		}
+
+		p, _ := helper.EncryptPassword(u.UpdatedPassword)
+		_, err = tx.Stmt(stmt).Exec(p, time.Now(), u.ID)
+
+		if err != nil {
+			log.Println(err)
+			tx.Rollback()
+			return nil, err
+		}
+
+		defer stmt.Close()
+
+		tx.Commit()
+
+		return u, err
+	}
+
+	return nil, ErrMatchPassword
 }
 
 func FindAllUsers() ([]User, error) {
@@ -143,7 +205,7 @@ func FindUserByUsername(username string) (*User, error) {
 		return nil, err
 	}
 	defer stmt.Close()
-	err = stmt.QueryRow(username).Scan(&u.ID, &u.Name, &u.Email, &u.Username, &u.Created)
+	err = stmt.QueryRow(username).Scan(&u.ID, &u.Name, &u.Email, &u.Username, &u.Password, &u.Created)
 	switch {
 	case err == sql.ErrNoRows:
 		log.Printf("User with username %s not found", username)
@@ -215,22 +277,19 @@ func AuthUser(username string, password string) (bool, error) {
 	}
 }
 
-func userExists(user *User) error {
+func userExists(user *User) (*User, error) {
 
 	stmt, err := env.GetConnection().Prepare(dml.FindUserByUsername)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer stmt.Close()
 
 	var u User
-	err = stmt.QueryRow(user.Username).Scan(&u.ID, &u.Name, &u.Email, &u.Username, &u.Created)
+	err = stmt.QueryRow(user.Username).Scan(&u.ID, &u.Name, &u.Email, &u.Username, &u.Password, &u.Created)
+	return &u, err
+}
 
-	if err == sql.ErrNoRows {
-		return nil
-	} else if u.ID == user.ID {
-		return nil
-	} else {
-		return ErrUsernameExists
-	}
+func isPasswordEqual(u *User) bool {
+	return u.Password == u.ConfirmPassword
 }

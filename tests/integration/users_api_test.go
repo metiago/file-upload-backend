@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/metiago/zbx1/common/request"
+	"github.com/metiago/zbx1/common/helper"
 	"github.com/metiago/zbx1/repository"
 )
 
@@ -21,35 +21,121 @@ func init() {
 func TestAddUser(t *testing.T) {
 
 	u := &repository.User{
-		Name:     "Bapi",
-		Email:    "bapi@gmail.com",
-		Username: "bapi",
-		Password: "123XFS"}
+		Name:            "Bapi",
+		Email:           "bapi@gmail.com",
+		Username:        "bapi",
+		Password:        "123XFS",
+		ConfirmPassword: "123XFS",
+		UpdatedPassword: ""}
 	data, err := json.Marshal(u)
 	if err != nil {
 		t.Error(err)
 	}
-	status := request.PostHTTP(fmt.Sprintf("%s/%s", baseURL, signUpURL), "", data)
+	status := helper.PostHTTP(fmt.Sprintf("%s/%s", baseURL, signUpURL), "", data)
 	expected := 201
 	if status != expected {
 		t.Errorf("Expected is %d but was: %d", expected, status)
 	}
 }
 
-func TestUpdateUser(t *testing.T) {
+func TestUpdateUserPasswordThanOK(t *testing.T) {
+
 	anyUser := getAnyUser()
 
 	u := &repository.User{
-		Name:     "Ziggy",
-		Email:    "ziggy@gmail.com",
-		Username: "ziggy",
-		Password: "ziggy123"}
+		Name:            "Ziggy Update",
+		Email:           "ziggy_update@gmail.com",
+		Username:        anyUser.Username,
+		Password:        "123XFS",
+		ConfirmPassword: "123XFS",
+		UpdatedPassword: "12345678"}
+	data, err := json.Marshal(u)
+	if err != nil {
+		t.Error(err)
+	}
+
+	id := strconv.Itoa(anyUser.ID)
+	up := string(id) + "/update-password"
+
+	status := helper.PutHTTP(fmt.Sprintf("%s/%s/%s", baseURL, usersPathURL, up), token, data)
+
+	expected := 200
+	if status != expected {
+		t.Errorf("Expected is %d but was: %d", expected, status)
+	}
+}
+
+func TestUpdateWrongConfirmPasswordThanFail(t *testing.T) {
+
+	anyUser := getAnyUser()
+
+	u := &repository.User{
+		Name:            "Ziggy Update",
+		Email:           "ziggy_update@gmail.com",
+		Username:        anyUser.Username,
+		Password:        "123XFS",
+		ConfirmPassword: "Xsd",
+		UpdatedPassword: "12345678"}
+	data, err := json.Marshal(u)
+	if err != nil {
+		t.Error(err)
+	}
+
+	id := strconv.Itoa(anyUser.ID)
+	up := string(id) + "/update-password"
+
+	status := helper.PutHTTP(fmt.Sprintf("%s/%s/%s", baseURL, usersPathURL, up), token, data)
+
+	expected := 400
+	if status != expected {
+		t.Errorf("Expected is %d but was: %d", expected, status)
+	}
+}
+
+func TestUpdateWrongOldPasswordThanFail(t *testing.T) {
+
+	anyUser := getAnyUser()
+
+	u := &repository.User{
+		Name:            "Ziggy Update",
+		Email:           "ziggy_update@gmail.com",
+		Username:        anyUser.Username,
+		Password:        "kkk",
+		ConfirmPassword: "kkk",
+		UpdatedPassword: "12345678"}
+	data, err := json.Marshal(u)
+	if err != nil {
+		t.Error(err)
+	}
+
+	id := strconv.Itoa(anyUser.ID)
+	up := string(id) + "/update-password"
+
+	status := helper.PutHTTP(fmt.Sprintf("%s/%s/%s", baseURL, usersPathURL, up), token, data)
+
+	expected := 400
+	if status != expected {
+		t.Errorf("Expected is %d but was: %d", expected, status)
+	}
+}
+
+func TestUpdateUser(t *testing.T) {
+
+	anyUser := getAnyUser()
+
+	u := &repository.User{
+		Name:            "Ziggy",
+		Email:           "ziggy@gmail.com",
+		Username:        "ziggy",
+		Password:        "12345678",
+		ConfirmPassword: "12345678",
+		UpdatedPassword: ""}
 	data, err := json.Marshal(u)
 	if err != nil {
 		t.Error(err)
 	}
 	id := strconv.Itoa(anyUser.ID)
-	status := request.PutHTTP(fmt.Sprintf("%s/%s/%s", baseURL, usersPathURL, id), token, data)
+	status := helper.PutHTTP(fmt.Sprintf("%s/%s/%s", baseURL, usersPathURL, id), token, data)
 	expected := 200
 	if status != expected {
 		t.Errorf("Expected is %d but was: %d", expected, status)
@@ -59,16 +145,18 @@ func TestUpdateUser(t *testing.T) {
 func TestAddExistingUserThanFail(t *testing.T) {
 
 	u := &repository.User{
-		Name:     "AAA",
-		Email:    "ziggy@gmail.com",
-		Username: "metiago",
-		Password: "doggy"}
+		Name:            "AAA",
+		Email:           "ziggy@gmail.com",
+		Username:        "metiago",
+		Password:        "12345678",
+		ConfirmPassword: "12345678",
+		UpdatedPassword: ""}
 	data, err := json.Marshal(u)
 	if err != nil {
 		t.Error(err)
 	}
 
-	status := request.PostHTTP(fmt.Sprintf("%s/%s", baseURL, signUpURL), "", data)
+	status := helper.PostHTTP(fmt.Sprintf("%s/%s", baseURL, signUpURL), "", data)
 
 	expected := 400
 	if status != expected {
@@ -81,16 +169,18 @@ func TestUpdateExistingUserThanFail(t *testing.T) {
 	anyUser := getAnyUser()
 
 	u := &repository.User{
-		Name:     "Ziggy Update",
-		Email:    "ziggy_update@gmail.com",
-		Username: "metiago",
-		Password: "doggy_update"}
+		Name:            "Ziggy Update",
+		Email:           "ziggy_update@gmail.com",
+		Username:        "metiago",
+		Password:        "12345678",
+		ConfirmPassword: "12345678",
+		UpdatedPassword: ""}
 	data, err := json.Marshal(u)
 	if err != nil {
 		t.Error(err)
 	}
 	id := strconv.Itoa(anyUser.ID)
-	status := request.PutHTTP(fmt.Sprintf("%s/%s/%s", baseURL, usersPathURL, id), token, data)
+	status := helper.PutHTTP(fmt.Sprintf("%s/%s/%s", baseURL, usersPathURL, id), token, data)
 	expected := 400
 	if status != expected {
 		t.Errorf("Expected is %d but was: %d", expected, status)
@@ -102,16 +192,18 @@ func TestUpdateExistingUserThanOK(t *testing.T) {
 	anyUser := getAnyUser()
 
 	u := &repository.User{
-		Name:     "Ziggy Update",
-		Email:    "ziggy_update@gmail.com",
-		Username: anyUser.Username,
-		Password: "doggy_update"}
+		Name:            "Ziggy Update",
+		Email:           "ziggy_update@gmail.com",
+		Username:        anyUser.Username,
+		Password:        "12345678",
+		ConfirmPassword: "12345678",
+		UpdatedPassword: ""}
 	data, err := json.Marshal(u)
 	if err != nil {
 		t.Error(err)
 	}
 	id := strconv.Itoa(anyUser.ID)
-	status := request.PutHTTP(fmt.Sprintf("%s/%s/%s", baseURL, usersPathURL, id), token, data)
+	status := helper.PutHTTP(fmt.Sprintf("%s/%s/%s", baseURL, usersPathURL, id), token, data)
 	expected := 200
 	if status != expected {
 		t.Errorf("Expected is %d but was: %d", expected, status)
@@ -123,7 +215,7 @@ func TestFindOneUser(t *testing.T) {
 	user := getAnyUser()
 	id := strconv.Itoa(user.ID)
 
-	body, status := request.GetHTTP(fmt.Sprintf("%s/%s/%s", baseURL, usersPathURL, id), token)
+	body, status := helper.GetHTTP(fmt.Sprintf("%s/%s/%s", baseURL, usersPathURL, id), token)
 
 	var u *repository.User
 	if err := json.Unmarshal(body, &u); err != nil {
@@ -143,7 +235,7 @@ func TestFindOneUser(t *testing.T) {
 
 func TestFindAllUsers(t *testing.T) {
 
-	body, status := request.GetHTTP(fmt.Sprintf("%s/%s", baseURL, usersPathURL), token)
+	body, status := helper.GetHTTP(fmt.Sprintf("%s/%s", baseURL, usersPathURL), token)
 
 	var users []*repository.User
 	if err := json.Unmarshal(body, &users); err != nil {
@@ -165,7 +257,7 @@ func TestDeleteUser(t *testing.T) {
 	user := getAnyUser()
 	id := strconv.Itoa(user.ID)
 
-	status := request.DeleteHTTP(fmt.Sprintf("%s/%s/%s", baseURL, usersPathURL, id), token)
+	status := helper.DeleteHTTP(fmt.Sprintf("%s/%s/%s", baseURL, usersPathURL, id), token)
 
 	expected := 204
 	if status != expected {
@@ -174,7 +266,7 @@ func TestDeleteUser(t *testing.T) {
 }
 
 func getAnyUser() *repository.User {
-	body, _ := request.GetHTTP(fmt.Sprintf("%s/%s", baseURL, usersPathURL), token)
+	body, _ := helper.GetHTTP(fmt.Sprintf("%s/%s", baseURL, usersPathURL), token)
 	var users []*repository.User
 	var user *repository.User
 	if err := json.Unmarshal(body, &users); err != nil {

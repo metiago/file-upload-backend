@@ -24,11 +24,13 @@ type File struct {
 
 // User is a type to define users
 type User struct {
-	ID       int       `json:"id"`
-	Name     string    `json:"name"`
-	Email    string    `json:"email"`
-	Username string    `json:"username"`
-	Password string    `json:"password"`
-	Created  time.Time `json:"created"`
-	Files    []*File   `json:"files"`
+	ID              int       `json:"id"`
+	Name            string    `json:"name"`
+	Email           string    `json:"email"`
+	Username        string    `json:"username"`
+	Password        string    `json:"password"`
+	ConfirmPassword string    `json:"confirm_password"`
+	UpdatedPassword string    `json:"updated_password"`
+	Created         time.Time `json:"created"`
+	Files           []*File   `json:"files"`
 }

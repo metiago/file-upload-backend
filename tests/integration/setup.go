@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/metiago/zbx1/common/request"
+	"github.com/metiago/zbx1/common/helper"
 	"github.com/metiago/zbx1/repository"
 )
 
@@ -32,7 +32,7 @@ func authorize() string {
 	if err != nil {
 		log.Println(err)
 	}
-	_, body := request.PostHTTPBody(fmt.Sprintf("%s/%s", baseURL, authPathURL), "", data)
+	_, body := helper.PostHTTPBody(fmt.Sprintf("%s/%s", baseURL, authPathURL), "", data)
 	m := make(map[string]string)
 	json.Unmarshal(body, &m)
 	return m["token"]

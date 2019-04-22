@@ -65,6 +65,12 @@ var routes = Routes{
 		userUpdate,
 	},
 	Route{
+		"UserPasswordUpdate",
+		"PUT",
+		"/users/{ID}/update-password",
+		userUpdatePassword,
+	},
+	Route{
 		"UserDelete",
 		"DELETE",
 		"/users/{ID}",
