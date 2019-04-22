@@ -7,7 +7,7 @@ import (
 
 // TODO CREATE A GO MODULE LIB
 // Validate a struct fields by reflection
-func Validate(x interface{}) []string {
+func ValidateEmpty(x interface{}) []string {
 	v := reflect.ValueOf(x).Elem()
 	values := make([]string, 0)
 	for i := 0; i < v.NumField(); i++ {

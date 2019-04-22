@@ -88,9 +88,9 @@ func userAdd(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	vals := helper.Validate(s)
+	vals := helper.ValidateEmpty(s)
 	if len(vals) > 0 {
-		// TODO Set http 400 status
+		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(vals)
 		return
 	}
@@ -110,6 +110,7 @@ func userAdd(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// TODO Return body with a custom message
 	w.WriteHeader(http.StatusCreated)
 }
 
