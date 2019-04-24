@@ -96,7 +96,7 @@ func UpdateUser(u *User) (*User, error) {
 
 func UpdateUserPassword(u *User) (*User, error) {
 
-	existentUser, err := FindUserByUsername(u.Username)
+	existentUser, err := FindUserByID(u.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -173,7 +173,7 @@ func FindUserByID(ID int) (*User, error) {
 	}
 	defer stmt.Close()
 
-	err = stmt.QueryRow(ID).Scan(&u.ID, &u.Name, &u.Email, &u.Username, &u.Created)
+	err = stmt.QueryRow(ID).Scan(&u.ID, &u.Name, &u.Email, &u.Username, &u.Password, &u.Created)
 
 	switch {
 	case err == sql.ErrNoRows:

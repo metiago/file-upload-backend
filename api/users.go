@@ -57,6 +57,9 @@ func userFindOne(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// remove password hash for external requests
+	u.Password = ""
+
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(u); err != nil {
 		log.Println(err)
@@ -91,7 +94,7 @@ func userAdd(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// VALIDATE REQUEST BODY FIELDS
-	if validErrs := validate(u, false); len(validErrs) > 0 {
+	if validErrs := validateForInsert(u); len(validErrs) > 0 {
 		err := map[string]interface{}{"validationError": validErrs}
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err)
@@ -146,7 +149,7 @@ func userUpdate(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	if validErrs := validate(u, false); len(validErrs) > 0 {
+	if validErrs := validateForUpdate(u); len(validErrs) > 0 {
 		err := map[string]interface{}{"validationError": validErrs}
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err)
@@ -200,7 +203,7 @@ func userUpdatePassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if validErrs := validate(u, true); len(validErrs) > 0 {
+	if validErrs := validateForUpdatePassword(u); len(validErrs) > 0 {
 		err := map[string]interface{}{"validationError": validErrs}
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err)
@@ -248,8 +251,7 @@ func userDelete(w http.ResponseWriter, r *http.Request) {
 	helper.HandleSuccessMessage(w, http.StatusNoContent, "User has been deleted successfully")
 }
 
-// TODO Refactory validations
-func validate(u *repository.User, flag bool) url.Values {
+func validateForInsert(u *repository.User) url.Values {
 
 	errs := url.Values{}
 
@@ -281,11 +283,50 @@ func validate(u *repository.User, flag bool) url.Values {
 		errs.Add("confirm_password", "Password and confirmation password not match!")
 	}
 
-	if flag {
+	return errs
+}
 
-		if u.UpdatedPassword == "" {
-			errs.Add("updated_password", "The new password field is required!")
-		}
+func validateForUpdate(u *repository.User) url.Values {
+
+	errs := url.Values{}
+
+	if u.Name == "" {
+		errs.Add("name", "The name field is required!")
+	}
+
+	if len(u.Name) < 3 || len(u.Name) > 120 {
+		errs.Add("name", "The name field must be between 3-120 chars!")
+	}
+
+	if u.Email == "" {
+		errs.Add("email", "The email field is required!")
+	}
+
+	if u.Username == "" {
+		errs.Add("username", "The username field is required!")
+	}
+
+	return errs
+}
+
+func validateForUpdatePassword(u *repository.User) url.Values {
+
+	errs := url.Values{}
+
+	if u.Password == "" {
+		errs.Add("password", "The password field is required!")
+	}
+
+	if u.ConfirmPassword == "" {
+		errs.Add("confirm_password", "The confirmation password field is required!")
+	}
+
+	if u.UpdatedPassword == "" {
+		errs.Add("updated_password", "The new password field is required!")
+	}
+
+	if u.ConfirmPassword != u.UpdatedPassword {
+		errs.Add("confirm_password", "Password and confirmation password not match!")
 	}
 
 	return errs

@@ -6,7 +6,7 @@ const UpdateUser string = "UPDATE zbx1.users SET u_name = $1, u_email = $2, u_us
 
 const FindAllUsers string = "SELECT id, u_name, u_email, u_username, u_created FROM zbx1.users"
 
-const FindUserByID string = "SELECT id, u_name, u_email, u_username, u_created FROM zbx1.users WHERE id = $1"
+const FindUserByID string = "SELECT id, u_name, u_email, u_username, u_password, u_created FROM zbx1.users WHERE id = $1"
 
 const FindUserByUsername string = "SELECT id, u_name, u_email, u_username, u_password, u_created FROM zbx1.users WHERE u_username = $1"
 
