@@ -147,5 +147,6 @@ func fileDelete(w http.ResponseWriter, r *http.Request) {
 		helper.Handle500(w, err)
 		return
 	}
-	w.WriteHeader(http.StatusNoContent)
+
+	helper.HandleSuccessMessage(w, http.StatusNoContent, "File has been deleted successfully")
 }
