@@ -65,22 +65,6 @@ func userFindOne(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func validate(u *repository.User) url.Values {
-
-	errs := url.Values{}
-
-	if u.Name == "" {
-		errs.Add("name", "The name field is required!")
-	}
-
-	if len(u.Name) < 3 || len(u.Name) > 120 {
-		errs.Add("name", "The name field must be between 3-120 chars!")
-	}
-
-	return errs
-}
-
-
 func userAdd(w http.ResponseWriter, r *http.Request) {
 
 	// READ JSON REQUEST BODY
@@ -129,8 +113,7 @@ func userAdd(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO Return body with a custom message
-	w.WriteHeader(http.StatusCreated)
+	helper.HandleSuccessMessage(w, http.StatusCreated, "User has been created successfully")
 }
 
 func userUpdate(w http.ResponseWriter, r *http.Request) {
@@ -185,7 +168,7 @@ func userUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
+	helper.HandleSuccessMessage(w, http.StatusOK, "User has been updated successfully")
 }
 
 func userUpdatePassword(w http.ResponseWriter, r *http.Request) {
@@ -235,7 +218,8 @@ func userUpdatePassword(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	w.WriteHeader(http.StatusOK)
+
+	helper.HandleSuccessMessage(w, http.StatusOK, "Your password has been updated successfully")
 }
 
 func userDelete(w http.ResponseWriter, r *http.Request) {
@@ -256,5 +240,22 @@ func userDelete(w http.ResponseWriter, r *http.Request) {
 		helper.Handle500(w, err)
 		return
 	}
-	w.WriteHeader(http.StatusNoContent)
+
+	helper.HandleSuccessMessage(w, http.StatusNoContent, "User has been deleted successfully")
+}
+
+// TODO Refactory validations
+func validate(u *repository.User) url.Values {
+
+	errs := url.Values{}
+
+	if u.Name == "" {
+		errs.Add("name", "The name field is required!")
+	}
+
+	if len(u.Name) < 3 || len(u.Name) > 120 {
+		errs.Add("name", "The name field must be between 3-120 chars!")
+	}
+
+	return errs
 }

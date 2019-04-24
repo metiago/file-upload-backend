@@ -28,12 +28,20 @@ func checkError(err error) {
 	}
 }
 
+func HandleSuccessMessage(w http.ResponseWriter, status int, message string) {
+	var response Response
+	response.StatusCode = status
+	response.Message = message
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		log.Println(err)
+	}
+}
+
 func Handle200(w http.ResponseWriter, message string) {
 	var response Response
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	response.StatusCode = http.StatusForbidden
-	response.Message = message
+	
 	if err := json.NewEncoder(w).Encode(response); err != nil {
 		log.Println(err)
 	}

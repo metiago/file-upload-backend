@@ -75,7 +75,7 @@ func fileUpload(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	w.WriteHeader(http.StatusCreated)
+	helper.HandleSuccessMessage(w, http.StatusCreated, "File has been uploaded successfully")
 }
 
 func fileDownload(w http.ResponseWriter, r *http.Request) {
