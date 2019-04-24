@@ -7,8 +7,9 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 	"strconv"
-
+	
 	"github.com/gorilla/mux"
 
 	"github.com/metiago/zbx1/common/helper"
@@ -64,6 +65,22 @@ func userFindOne(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func validate(u *repository.User) url.Values {
+
+	errs := url.Values{}
+
+	if u.Name == "" {
+		errs.Add("name", "The name field is required!")
+	}
+
+	if len(u.Name) < 3 || len(u.Name) > 120 {
+		errs.Add("name", "The name field must be between 3-120 chars!")
+	}
+
+	return errs
+}
+
+
 func userAdd(w http.ResponseWriter, r *http.Request) {
 
 	// READ JSON REQUEST BODY
@@ -73,12 +90,14 @@ func userAdd(w http.ResponseWriter, r *http.Request) {
 		helper.Handle500(w, err)
 		return
 	}
+	
 	// CLOSE REQUEST BODY
 	if err := r.Body.Close(); err != nil {
 		log.Println(err)
 		helper.Handle500(w, err)
 		return
 	}
+
 	// UNMARSHAL BODY INTO A STRUCTURE
 	var u *repository.User
 	if err := json.Unmarshal(body, &u); err != nil {
@@ -87,10 +106,11 @@ func userAdd(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	vals := helper.ValidateEmpty(u, "UpdatedPassword")
-	if len(vals) > 0 {
+	// VALIDATE REQUEST BODY FIELDS
+	if validErrs := validate(u); len(validErrs) > 0 {
+		err := map[string]interface{}{"validationError": validErrs}
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(vals)
+		json.NewEncoder(w).Encode(err)
 		return
 	}
 
@@ -143,12 +163,12 @@ func userUpdate(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	vals := helper.ValidateEmpty(u, "UpdatedPassword")
-	if len(vals) > 0 {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(vals)
-		return
-	}
+	// vals := helper.ValidateEmpty(u, "UpdatedPassword")
+	// if len(vals) > 0 {
+	// 	w.WriteHeader(http.StatusBadRequest)
+	// 	json.NewEncoder(w).Encode(vals)
+	// 	return
+	// }
 
 	u.ID = id
 	_, err = repository.UpdateUser(u)
@@ -164,6 +184,7 @@ func userUpdate(w http.ResponseWriter, r *http.Request) {
 		helper.Handle500(w, err)
 		return
 	}
+
 	w.WriteHeader(http.StatusOK)
 }
 

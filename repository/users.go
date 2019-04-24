@@ -5,7 +5,6 @@ import (
 	"errors"
 	"log"
 	"time"
-
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/metiago/zbx1/common/dml"
 	"github.com/metiago/zbx1/common/env"
@@ -293,3 +292,4 @@ func userExists(user *User) (*User, error) {
 func isPasswordEqual(u *User) bool {
 	return u.ConfirmPassword == u.UpdatedPassword
 }
+
