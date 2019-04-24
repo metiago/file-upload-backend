@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log"
 	"time"
+
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/metiago/zbx1/common/dml"
 	"github.com/metiago/zbx1/common/env"
@@ -13,7 +14,6 @@ import (
 
 var ErrUsernameExists = errors.New("Username already exists")
 var ErrMatchPassword = errors.New("Old password not match")
-var ErrCheckPasswordEquality = errors.New("Password and confirmation password must be equals")
 
 func AddUser(u *User) (*User, error) {
 
@@ -53,10 +53,6 @@ func AddUser(u *User) (*User, error) {
 }
 
 func UpdateUser(u *User) (*User, error) {
-
-	if !isPasswordEqual(u) {
-		return nil, ErrCheckPasswordEquality
-	}
 
 	existentUser, err := userExists(u)
 	if err != nil && err != sql.ErrNoRows {
@@ -99,10 +95,6 @@ func UpdateUser(u *User) (*User, error) {
 }
 
 func UpdateUserPassword(u *User) (*User, error) {
-
-	if !isPasswordEqual(u) {
-		return nil, ErrCheckPasswordEquality
-	}
 
 	existentUser, err := FindUserByUsername(u.Username)
 	if err != nil {
@@ -288,8 +280,3 @@ func userExists(user *User) (*User, error) {
 	err = stmt.QueryRow(user.Username).Scan(&u.ID, &u.Name, &u.Email, &u.Username, &u.Password, &u.Created)
 	return &u, err
 }
-
-func isPasswordEqual(u *User) bool {
-	return u.ConfirmPassword == u.UpdatedPassword
-}
-

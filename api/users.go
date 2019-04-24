@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
-	
+
 	"github.com/gorilla/mux"
 
 	"github.com/metiago/zbx1/common/helper"
@@ -74,7 +74,7 @@ func userAdd(w http.ResponseWriter, r *http.Request) {
 		helper.Handle500(w, err)
 		return
 	}
-	
+
 	// CLOSE REQUEST BODY
 	if err := r.Body.Close(); err != nil {
 		log.Println(err)
@@ -91,7 +91,7 @@ func userAdd(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// VALIDATE REQUEST BODY FIELDS
-	if validErrs := validate(u); len(validErrs) > 0 {
+	if validErrs := validate(u, false); len(validErrs) > 0 {
 		err := map[string]interface{}{"validationError": validErrs}
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err)
@@ -146,12 +146,12 @@ func userUpdate(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	// vals := helper.ValidateEmpty(u, "UpdatedPassword")
-	// if len(vals) > 0 {
-	// 	w.WriteHeader(http.StatusBadRequest)
-	// 	json.NewEncoder(w).Encode(vals)
-	// 	return
-	// }
+	if validErrs := validate(u, false); len(validErrs) > 0 {
+		err := map[string]interface{}{"validationError": validErrs}
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(err)
+		return
+	}
 
 	u.ID = id
 	_, err = repository.UpdateUser(u)
@@ -200,6 +200,13 @@ func userUpdatePassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if validErrs := validate(u, true); len(validErrs) > 0 {
+		err := map[string]interface{}{"validationError": validErrs}
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(err)
+		return
+	}
+
 	u.ID = id
 	_, err = repository.UpdateUserPassword(u)
 	if err != nil {
@@ -207,9 +214,6 @@ func userUpdatePassword(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 
 		switch err {
-		case repository.ErrCheckPasswordEquality:
-			helper.Handle400(w, err)
-			return
 		case repository.ErrMatchPassword:
 			helper.Handle400(w, err)
 			return
@@ -245,7 +249,7 @@ func userDelete(w http.ResponseWriter, r *http.Request) {
 }
 
 // TODO Refactory validations
-func validate(u *repository.User) url.Values {
+func validate(u *repository.User, flag bool) url.Values {
 
 	errs := url.Values{}
 
@@ -255,6 +259,33 @@ func validate(u *repository.User) url.Values {
 
 	if len(u.Name) < 3 || len(u.Name) > 120 {
 		errs.Add("name", "The name field must be between 3-120 chars!")
+	}
+
+	if u.Email == "" {
+		errs.Add("email", "The email field is required!")
+	}
+
+	if u.Username == "" {
+		errs.Add("username", "The username field is required!")
+	}
+
+	if u.Password == "" {
+		errs.Add("password", "The password field is required!")
+	}
+
+	if u.ConfirmPassword == "" {
+		errs.Add("confirm_password", "The confirmation password field is required!")
+	}
+
+	if u.Password != u.ConfirmPassword {
+		errs.Add("confirm_password", "Password and confirmation password not match!")
+	}
+
+	if flag {
+
+		if u.UpdatedPassword == "" {
+			errs.Add("updated_password", "The new password field is required!")
+		}
 	}
 
 	return errs
