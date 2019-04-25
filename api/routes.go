@@ -91,7 +91,7 @@ var routes = Routes{
 	Route{
 		"FileFindAllByUsername",
 		"GET",
-		"/files/{username}",
+		"/files/query",
 		fileFindAllByUsername,
 	},
 	Route{

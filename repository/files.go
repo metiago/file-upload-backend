@@ -72,8 +72,8 @@ func FileDownload(ID int) (*File, error) {
 	}
 }
 
-func FindaAllFilesByUsername(username string) ([]File, error) {
-	rows, err := env.GetConnection().Query(dml.FindAllFilesByUsername, username)
+func FindaAllFilesByUsername(username string, offset int) ([]File, error) {
+	rows, err := env.GetConnection().Query(dml.FindAllFilesByUsername, username, offset)
 	if err != nil {
 		return nil, err
 	}

@@ -115,9 +115,16 @@ func fileDownload(w http.ResponseWriter, r *http.Request) {
 }
 
 func fileFindAllByUsername(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	username := vars["username"]
-	result, err := repository.FindaAllFilesByUsername(username)
+
+	query := r.URL.Query()
+	username := query.Get("username")
+	offset, err := strconv.Atoi(query.Get("offset"))
+	if err != nil {
+		helper.Handle500(w, err)
+		return
+	}
+
+	result, err := repository.FindaAllFilesByUsername(username, offset)
 	if err != nil {
 		helper.Handle500(w, err)
 		return
