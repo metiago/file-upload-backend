@@ -14,4 +14,4 @@ const FindAllFilesByUsername string = `SELECT f.id, f.f_name, f.f_ext, f.f_creat
 									   FROM zbx1.files f 
 									   INNER JOIN zbx1.users_files uf ON f.id = uf.file_id 
 									   INNER JOIN zbx1.users u ON u.id = uf.user_id 
-									   WHERE u.u_username = $1 order by id LIMIT 10 OFFSET 10*($2-1);`
+									   WHERE u.u_username = $1 ORDER BY f_created DESC LIMIT 10 OFFSET 10*($2-1);`
