@@ -25,7 +25,7 @@ func main() {
 	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS"})
 	//router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 
-	// migrate()
+	migrate()
 
 	log.Printf("Listen on %s", service)
 	log.Fatal(http.ListenAndServe(service, handlers.CORS(originsOk, headersOk, methodsOk)(router)))

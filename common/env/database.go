@@ -31,8 +31,8 @@ func init() {
 func GetConnection() *sql.DB {
 	db, err := sql.Open("postgres", settings)
 	// heroku free tier limits to 20 database max connextions
-	db.SetMaxOpenConns(10)
-	db.SetMaxIdleConns(8)
+	db.SetMaxOpenConns(6)
+	db.SetMaxIdleConns(5)
 	if err != nil {
 		log.Fatal(err)
 	}
