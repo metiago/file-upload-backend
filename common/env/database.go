@@ -30,12 +30,12 @@ func init() {
 // GetConnection is responsible to get mysql connection
 func GetConnection() *sql.DB {
 	db, err := sql.Open("postgres", settings)
-	// heroku free tier limits to 20 database max connextions
-	db.SetMaxOpenConns(6)
-	db.SetMaxIdleConns(5)
 	if err != nil {
 		log.Fatal(err)
 	}
+	// heroku free tier limits to 20 database max connextions
+	db.SetMaxOpenConns(6)
+	db.SetMaxIdleConns(5)
 	return db
 }
 
