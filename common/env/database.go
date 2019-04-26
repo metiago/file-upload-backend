@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/go-redis/redis"
 	_ "github.com/lib/pq"
@@ -36,6 +37,7 @@ func GetConnection() *sql.DB {
 	// heroku free tier limits to 20 database max connextions
 	db.SetMaxOpenConns(5)
 	db.SetMaxIdleConns(5)
+	db.SetConnMaxLifetime(1 * time.Hour)
 	return db
 }
 
