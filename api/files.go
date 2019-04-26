@@ -118,13 +118,13 @@ func fileFindAllByUsername(w http.ResponseWriter, r *http.Request) {
 
 	query := r.URL.Query()
 	username := query.Get("username")
-	offset, err := strconv.Atoi(query.Get("offset"))
+	page, err := strconv.Atoi(query.Get("page"))
 	if err != nil {
 		helper.Handle500(w, err)
 		return
 	}
 
-	result, err := repository.FindaAllFilesByUsername(username, offset)
+	result, err := repository.FindaAllFilesByUsername(username, page)
 	if err != nil {
 		helper.Handle500(w, err)
 		return
