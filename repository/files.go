@@ -12,7 +12,7 @@ import (
 
 var ErrFileExists = errors.New("File already exists")
 
-func FileUpload(u User, f File) error {
+func FileUpload(u User, f *File) error {
 
 	err := fileExists(u, f)
 	if err != nil {
@@ -95,7 +95,7 @@ func FindaAllFilesByUsername(username string, offset int) ([]File, error) {
 	return fl, err
 }
 
-func fileExists(u User, f File) error {
+func fileExists(u User, f *File) error {
 
 	rows, err := env.GetConnection().Query(dml.FileExist, u.Username, f.Name)
 	if err != nil {

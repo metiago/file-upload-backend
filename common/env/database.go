@@ -34,10 +34,9 @@ func GetConnection() *sql.DB {
 	if err != nil {
 		log.Fatal(err)
 	}
-	// heroku free tier limits to 20 database max connextions
+	// Connection pool settings
 	db.SetMaxOpenConns(15)
 	db.SetMaxIdleConns(5)
-	// FIXME Check it for better performace
 	db.SetConnMaxLifetime(5 * time.Second)
 	return db
 }

@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"path/filepath"
 	"strconv"
 
@@ -55,10 +56,13 @@ func fileUpload(w http.ResponseWriter, r *http.Request) {
 		var u repository.User
 		mapstructure.Decode(claims["uinf"], &u)
 
-		var f repository.File
+		var f *repository.File
 		f.Name = handler.Filename
 		f.Ext = filepath.Ext(handler.Filename)
 		f.Data = buf.Bytes()
+
+		validateForUpload(f)
+
 		err = repository.FileUpload(u, f)
 		if err != nil {
 
@@ -76,6 +80,21 @@ func fileUpload(w http.ResponseWriter, r *http.Request) {
 	}
 
 	helper.HandleSuccessMessage(w, http.StatusCreated, "File has been uploaded successfully")
+}
+
+func validateForUpload(f *repository.File) url.Values {
+
+	errs := url.Values{}
+
+	if f.Name == "" {
+		errs.Add("name", "The name field is required!")
+	}
+
+	if len(f.Name) < 3 || len(f.Name) > 150 {
+		errs.Add("name", "The name field must be between 3-150 chars!")
+	}
+
+	return errs
 }
 
 func fileDownload(w http.ResponseWriter, r *http.Request) {
