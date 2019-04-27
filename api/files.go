@@ -56,12 +56,17 @@ func fileUpload(w http.ResponseWriter, r *http.Request) {
 		var u repository.User
 		mapstructure.Decode(claims["uinf"], &u)
 
-		var f *repository.File
+		var f = new(repository.File)
 		f.Name = handler.Filename
 		f.Ext = filepath.Ext(handler.Filename)
 		f.Data = buf.Bytes()
 
-		validateForUpload(f)
+		if validErrs := validateForUpload(f); len(validErrs) > 0 {
+			err := map[string]interface{}{"validationError": validErrs}
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(err)
+			return
+		}
 
 		err = repository.FileUpload(u, f)
 		if err != nil {
