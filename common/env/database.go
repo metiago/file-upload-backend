@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/go-redis/redis"
@@ -13,6 +14,8 @@ import (
 
 var (
 	settings string
+	once     sync.Once
+	conn     *sql.DB
 )
 
 func init() {
@@ -30,15 +33,18 @@ func init() {
 
 // GetConnection is responsible to get mysql connection
 func GetConnection() *sql.DB {
-	db, err := sql.Open("postgres", settings)
-	if err != nil {
-		log.Fatal(err)
-	}
-	// Connection pool settings
-	db.SetMaxOpenConns(15)
-	db.SetMaxIdleConns(5)
-	db.SetConnMaxLifetime(5 * time.Second)
-	return db
+	once.Do(func() {
+		var err error
+		conn, err = sql.Open("postgres", settings)
+		if err != nil {
+			log.Panic(err)
+		}
+		// Connection pool settings
+		conn.SetMaxOpenConns(20)
+		conn.SetMaxIdleConns(0)
+		conn.SetConnMaxLifetime(time.Nanosecond)
+	})
+	return conn
 }
 
 // InitRedisDB is responsible to get redis connection
