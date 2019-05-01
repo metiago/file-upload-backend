@@ -55,8 +55,16 @@ func TestDeleteFile(t *testing.T) {
 	}
 }
 
+func TestFilePagination(t *testing.T) {
+	_, status := helper.GetHTTP(fmt.Sprintf("%s/%s/query?username=%s&page=1", baseURL, filesPathURL, "metiago"), token)
+	expected := 200
+	if status != expected {
+		t.Errorf("Expected is %d but was: %d", expected, status)
+	}
+}
+
 func getAnyFile() *repository.File {
-	body, _ := helper.GetHTTP(fmt.Sprintf("%s/%s/%s", baseURL, filesPathURL, "metiago"), token)
+	body, _ := helper.GetHTTP(fmt.Sprintf("%s/%s/query?username=%s&page=1", baseURL, filesPathURL, "metiago"), token)
 	var files []*repository.File
 	var file *repository.File
 	if err := json.Unmarshal(body, &files); err != nil {
@@ -68,5 +76,3 @@ func getAnyFile() *repository.File {
 
 	return file
 }
-
-// TODO Test pagination func

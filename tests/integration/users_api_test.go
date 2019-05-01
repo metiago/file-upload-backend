@@ -48,7 +48,8 @@ func TestUpdateUserPasswordThanOK(t *testing.T) {
 		Username:        anyUser.Username,
 		Password:        "123XFS",
 		ConfirmPassword: "123XFS",
-		UpdatedPassword: "12345678"}
+		UpdatedPassword: "123XFS"}
+
 	data, err := json.Marshal(u)
 	if err != nil {
 		t.Error(err)
