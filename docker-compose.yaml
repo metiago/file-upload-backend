@@ -1,27 +1,27 @@
 version: '3.3'
 services:
-  # zbx1:
-  #   container_name: 'zbx1'
-  #   build: './'
-  #   image: zbx1
-  #   ports:
-  #     - '5000:5000'
-  #   depends_on: 
-  #     - 'postgres'
-  #   environment:
-  #     PORT: ${PORT}
-  #     HOST: ${HOST}
-  #     DB_HOST: ${DB_HOST}
-  #     DB_PORT: ${DB_PORT}
-  #     DB_USERNAME: ${DB_USERNAME}
-  #     DB_PASSWORD: ${DB_PASSWORD}
-  #     DB_DATABASE: ${DB_DATABASE}
-  #     PRI_RSA: ${PRI_RSA}
-  #     PUB_RSA: ${PUB_RSA}
-  #   links:
-  #     - postgres:postgres
-  #   volumes:
-  #     - $PWD/volumes/zbx1:/usr/local/
+  zbx1:
+    container_name: 'zbx1'
+    build: './'
+    image: zbx1
+    ports:
+      - '5000:5000'
+    depends_on: 
+      - 'postgres'
+    environment:
+      PORT: ${PORT}
+      HOST: ${HOST}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE}
+      PRI_RSA: ${PRI_RSA}
+      PUB_RSA: ${PUB_RSA}
+    links:
+      - postgres:postgres
+    volumes:
+      - $PWD/volumes/zbx1:/usr/local/
   
   postgres:
     container_name: 'postgres'
