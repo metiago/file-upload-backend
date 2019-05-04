@@ -32,7 +32,6 @@ func main() {
 }
 
 // TODO Change it to a migration tool after tests
-// TODO Added better documentation to README how to use the API
 func migrate() {
 
 	verifyBytes, err := ioutil.ReadFile("ddl/ddl.sql")

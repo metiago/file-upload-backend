@@ -302,10 +302,6 @@ func validateForUpdate(u *repository.User) url.Values {
 		errs.Add("email", "The email field is required!")
 	}
 
-	if u.Username == "" {
-		errs.Add("username", "The username field is required!")
-	}
-
 	return errs
 }
 
