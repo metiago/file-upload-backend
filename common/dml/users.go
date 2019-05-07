@@ -1,8 +1,9 @@
 package dml
 
+// TODO Remove userbame from update
 const AddUser string = "INSERT INTO zbx1.users(u_name, u_email, u_username, u_password, u_created) VALUES ($1, $2, $3, $4, $5) returning id"
 
-const UpdateUser string = "UPDATE zbx1.users SET u_name = $1, u_email = $2, u_username = $3, u_created = $4 WHERE id = $5"
+const UpdateUser string = "UPDATE zbx1.users SET u_name = $1, u_email = $2, u_created = $3 WHERE id = $4"
 
 const FindAllUsers string = "SELECT id, u_name, u_email, u_username, u_created FROM zbx1.users"
 

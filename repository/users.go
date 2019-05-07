@@ -78,7 +78,7 @@ func UpdateUser(u *User) (*User, error) {
 		return nil, err
 	}
 
-	_, err = tx.Stmt(stmt).Exec(u.Name, u.Email, u.Username, time.Now(), u.ID)
+	_, err = tx.Stmt(stmt).Exec(u.Name, u.Email, time.Now(), u.ID)
 
 	if err != nil {
 		log.Println(err)
@@ -91,7 +91,6 @@ func UpdateUser(u *User) (*User, error) {
 	tx.Commit()
 
 	return u, nil
-
 }
 
 func UpdateUserPassword(u *User) (*User, error) {
