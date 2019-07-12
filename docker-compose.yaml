@@ -29,6 +29,8 @@ services:
     restart: always
     ports: 
       - 5432:5432
+    expose:
+      - 5432
     environment:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_USER: ${DB_USERNAME}

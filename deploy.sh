@@ -25,3 +25,5 @@ export PUB_RSA=rsa/app.rsa.pub
 docker-compose up -d --build --force-recreate
 
 go build
+
+./zbx1
