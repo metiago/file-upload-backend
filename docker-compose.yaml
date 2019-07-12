@@ -20,8 +20,8 @@ services:
   #     PUB_RSA: ${PUB_RSA}
   #   links:
   #     - postgres:postgres
-  #   volumes:
-  #     - $PWD/volumes/zbx1:/usr/local/
+    # volumes:
+    #   - $PWD/volumes/zbx1:/usr/local/
   
   postgres:
     container_name: 'postgres'

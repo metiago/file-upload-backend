@@ -4,7 +4,7 @@ LABEL Tiago Souza
 WORKDIR /go/src/github.com/metiago/zbx1
 ADD . .
 ENV GO111MODULE=on
-RUN go get && go install
+RUN go get && go mod tidy
 
 FROM alpine:latest
 LABEL Tiago Souza
