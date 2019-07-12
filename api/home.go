@@ -2,6 +2,7 @@ package api
 
 import (
 	"os"
+	"log"
 	"path/filepath"
 	"net/http"
 	"text/template"
@@ -16,7 +17,7 @@ func init() {
 }
 
 // Index handle index.html page
-func index(w http.ResponseWriter, r *http.Request) {
+func index(w http.ResponseWriter, r *http.Request) {	
  	if r.Method == "GET" {
  		templates.Execute(w, nil)
  	}
