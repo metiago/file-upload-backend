@@ -2,7 +2,6 @@ package api
 
 import (
 	"os"
-	"log"
 	"path/filepath"
 	"net/http"
 	"text/template"
