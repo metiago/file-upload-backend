@@ -27,7 +27,7 @@ func init() {
 	if host == "" || port == "" || username == "" || password == "" || database == "" {
 		log.Fatal("You must export database environment variables.")
 	}
-	settings = fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, username, password, database)
+	settings = fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=require", host, port, username, password, database)
 	log.Println("Established connection to:", settings)
 }
 
