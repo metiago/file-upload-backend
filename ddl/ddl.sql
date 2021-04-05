@@ -1,4 +1,4 @@
-DROP SCHEMA zbx1 cascade;
+DROP SCHEMA IF EXISTS zbx1 cascade;
 
 CREATE SCHEMA zbx1;
 
